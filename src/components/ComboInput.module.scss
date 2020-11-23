@@ -1,0 +1,50 @@
+.comboInput {
+  background: #fff;
+  --border-color: #b5b5b5;
+  border: 1px solid var(--border-color);
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+  border-radius: var(--border-radius);
+  --height: 60px;
+  height: var(--height);
+  display: flex;
+
+  &__input {
+    flex: 1;
+    height: 100%;
+    border: 0;
+    background-color: transparent;
+    font-size: 22px;
+    --input-radius: calc(var(--border-radius) - 1px);
+    border-radius: var(--input-radius) 0 0 var(--input-radius);
+    padding: 0 20px;
+
+    &:focus {
+      outline: none;
+      box-shadow: inset 1px 1px 0 0 var(--border-color),
+        inset -2px -1px 0 0 var(--border-color),
+        inset 1px -1px 0 0 var(--border-color),
+        inset -2px 1px 0 0 var(--border-color);
+    }
+  }
+
+  &__button {
+    height: 100%;
+    width: var(--height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+    --button-border-radius: calc(var(--border-radius) - 1px);
+    border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
+
+    &:focus {
+      outline: none;
+      box-shadow: inset 2px 1px 0 0 var(--border-color),
+        inset -1px -1px 0 0 var(--border-color),
+        inset 2px -1px 0 0 var(--border-color),
+        inset -1px 1px 0 0 var(--border-color);
+    }
+  }
+}

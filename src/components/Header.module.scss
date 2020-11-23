@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+
+  &__title {
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0;
+    position: relative;
+    top: -2px;
+  }
+
+  &__icon {
+    height: 100%;
+    margin-right: var(--gap, 18px);
+
+    svg {
+      height: 100%;
+    }
+  }
+}
