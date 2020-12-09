@@ -10,19 +10,16 @@ import {
 import { ApiResponse } from '../models/ApiResponse';
 
 export abstract class RequestHandler {
-  protected allowedMethods: ApiRequestMethod[] = [
-    ApiRequestMethod.GET,
-    ApiRequestMethod.POST,
-  ];
+  protected abstract allowedMethods: ApiRequestMethod[];
 
-  protected async handle(request: ApiRequest): Promise<ApiResponse> {
-    let response: ApiResponse;
-
+  public async handle(request: ApiRequest): Promise<ApiResponse> {
     const isRequestMethodAllowed = this.allowedMethods.includes(request.method);
 
     if (!isRequestMethodAllowed) {
-      response = this.handleNotAllowedMethod();
+      return this.handleNotAllowedMethod();
     }
+
+    let response: ApiResponse;
 
     try {
       switch (request.method) {
@@ -59,7 +56,12 @@ export abstract class RequestHandler {
   private handleNotAllowedMethod(): ApiResponse {
     const apiResponse: ApiResponse = {
       statusCode: StatusCodes.METHOD_NOT_ALLOWED,
-      content: StatusCodes.METHOD_NOT_ALLOWED,
+      content: {
+        error: ReasonPhrases.METHOD_NOT_ALLOWED,
+      },
+      headers: {
+        Allow: this.allowedMethods.join(', '),
+      },
     };
 
     return apiResponse;

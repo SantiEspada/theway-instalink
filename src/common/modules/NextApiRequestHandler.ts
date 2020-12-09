@@ -9,7 +9,9 @@ import {
 import { ApiResponse } from '../models/ApiResponse';
 import { RequestHandler } from './RequestHandler';
 
-export abstract class NextApiRequestHandler extends RequestHandler {
+export class NextApiRequestHandler<TRequestHandler extends RequestHandler> {
+  constructor(private readonly requestHandler: TRequestHandler) {}
+
   public get handler(): NextApiHandler {
     const nextApiHandler: NextApiHandler = async (
       req: NextApiRequest,
@@ -17,7 +19,7 @@ export abstract class NextApiRequestHandler extends RequestHandler {
     ) => {
       const apiRequest = this.adaptNextApiRequestToApiRequest(req);
 
-      const apiResponse = await this.handle(apiRequest);
+      const apiResponse = await this.requestHandler.handle(apiRequest);
 
       this.handleApiResponse(apiResponse, res);
     };
@@ -33,10 +35,13 @@ export abstract class NextApiRequestHandler extends RequestHandler {
     switch (nextApiRequest.method) {
       case ApiRequestMethod.GET:
         apiRequest = this.adaptNextApiRequestToGetApiRequest(nextApiRequest);
+        break;
       case ApiRequestMethod.POST:
         apiRequest = this.adaptNextApiRequestToPostApiRequest(nextApiRequest);
+        break;
       default:
         apiRequest = this.adaptNextApiRequestToNotAllowedMethod(nextApiRequest);
+        break;
     }
 
     return apiRequest;
@@ -77,6 +82,8 @@ export abstract class NextApiRequestHandler extends RequestHandler {
 
   private handleApiResponse(apiResponse: ApiResponse, res: NextApiResponse) {
     res.statusCode = apiResponse.statusCode || 200;
+
+    res.setHeader('Content-Type', 'application/json');
 
     if (apiResponse.headers) {
       for (const [key, value] of Object.entries(apiResponse.headers)) {
