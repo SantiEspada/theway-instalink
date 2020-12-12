@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes';
-import { ApiError } from 'next/dist/next-server/server/api-utils';
 import { Describe, is, object, string } from 'superstruct';
 
 import { RequestHandler } from '../../common/modules/RequestHandler';
@@ -9,9 +8,15 @@ import {
   PostApiRequest,
 } from '../../common/models/ApiRequest';
 import { ApiResponse } from '../../common/models/ApiResponse';
+import { ApiError } from '../../common/models/ApiError';
 
-interface AuthSessionsRequestBody {
+export interface AuthSessionsRequestBody {
   email: string;
+}
+
+export interface AuthSessionsRequestResponse {
+  email: string;
+  nonce: string;
 }
 
 export class AuthSessionsRequestHandler extends RequestHandler {
@@ -25,24 +30,27 @@ export class AuthSessionsRequestHandler extends RequestHandler {
 
   protected async handlePost(request: PostApiRequest): Promise<ApiResponse> {
     if (!this.isValidBody(request.body)) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid body');
+      throw new ApiError('Invalid body', StatusCodes.BAD_REQUEST);
     }
 
-    const { email } = request.body;
+    const { email: originalEmail } = request.body;
 
-    await this.createAuthSessionInteractor.interact({
-      email,
+    const { email, nonce } = await this.createAuthSessionInteractor.interact({
+      email: originalEmail,
     });
 
+    const content: AuthSessionsRequestResponse = {
+      email,
+      nonce,
+    };
+
     return {
-      statusCode: StatusCodes.NO_CONTENT,
-      content: '',
+      statusCode: StatusCodes.OK,
+      content,
     };
   }
 
   private isValidBody(value: unknown): value is AuthSessionsRequestBody {
-    console.log(value);
-
     const schema: Describe<AuthSessionsRequestBody> = object({
       email: string(),
     });

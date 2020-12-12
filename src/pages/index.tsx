@@ -1,28 +1,76 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { StatusCodes } from 'http-status-codes';
+import dynamic from 'next/dynamic';
 
 import { Header } from '../components/Header';
 import { LoginForm } from '../components/LoginForm';
 
 import styles from '../styles/Home.module.scss';
+import {
+  AuthSessionsRequestBody,
+  AuthSessionsRequestResponse,
+} from '../auth/request-handlers/AuthSessionsRequestHandler';
+import {
+  AuthSessionsSessionIdVerifyRequestBody,
+  AuthSessionsSessionIdVerifyRequestResponse,
+} from '../auth/request-handlers/AuthSessionsSessionIdVerifyRequestHandler';
 
 async function sendLoginLink(email: string): Promise<void> {
-  const body = JSON.stringify({
+  const body: AuthSessionsRequestBody = {
     email,
-  });
+  };
 
-  const response = await fetch('/api/auth/sendLoginLink', {
+  const response = await fetch('/api/auth/sessions', {
     method: 'POST',
-    body,
+    body: JSON.stringify(body),
     headers: {
-      'content-type': 'application/json',
-      'accept-type': 'application/json',
+      'Content-Type': 'application/json',
+      'Accept-Type': 'application/json',
     },
   });
 
-  if (response.status !== 204) {
-    const responseData = await response.json();
+  const responseData = await response.json();
 
+  if (response.status === StatusCodes.OK) {
+    const { email, nonce } = responseData as AuthSessionsRequestResponse;
+
+    localStorage.setItem('instaLink.authSession.email', email);
+    localStorage.setItem('instaLink.authSession.nonce', nonce);
+  } else {
+    throw new Error(responseData.error);
+  }
+}
+
+async function verifyLoginLink(sessionId: string) {
+  const email = localStorage.getItem('instaLink.authSession.email');
+  const nonce = localStorage.getItem('instaLink.authSession.nonce');
+
+  const body: AuthSessionsSessionIdVerifyRequestBody = {
+    id: sessionId,
+    email,
+    nonce,
+  };
+
+  const response = await fetch(`/api/auth/sessions/${sessionId}/verify`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Type': 'application/json',
+    },
+  });
+
+  const responseData = await response.json();
+
+  if (response.status === StatusCodes.OK) {
+    const {
+      token,
+    } = responseData as AuthSessionsSessionIdVerifyRequestResponse;
+
+    localStorage.setItem('instaLink.authSession.id', sessionId);
+    localStorage.setItem('instaLink.authSession.token', token);
+  } else {
     throw new Error(responseData.error);
   }
 }
@@ -30,9 +78,10 @@ async function sendLoginLink(email: string): Promise<void> {
 enum Step {
   initial,
   waitingForConfirmation,
+  verifyingSession,
 }
 
-export default function Home() {
+function Home() {
   const [error, setError] = useState<null | string>(null);
   const [step, setStep] = useState<Step>(Step.initial);
 
@@ -47,6 +96,30 @@ export default function Home() {
       setError(err.message);
     }
   };
+
+  const handleQueryParams = async (location) => {
+    const params = new URLSearchParams(location);
+
+    if (params.has('sessionId')) {
+      setStep(Step.verifyingSession);
+
+      try {
+        await verifyLoginLink(params.get('sessionId'));
+
+        const token = localStorage.getItem('instaLink.authSession.token');
+
+        console.log(token);
+      } catch (err) {
+        setStep(Step.initial);
+
+        setError(err.message);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleQueryParams(window.location.search);
+  }, [window.location.search]);
 
   return (
     <div className={styles.container}>
@@ -72,8 +145,17 @@ export default function Home() {
               </p>
             </div>
           ),
+          [Step.verifyingSession]: () => (
+            <div>
+              <h2>Iniciando sesión...</h2>
+            </div>
+          ),
         }[step]()}
       </main>
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false,
+});

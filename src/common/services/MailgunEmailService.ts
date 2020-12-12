@@ -15,14 +15,14 @@ export class MailgunEmailService implements EmailService {
 
   constructor(env = process.env) {
     this.senderInfo = {
-      name: process.env.EMAIL_SENDER_ADDRESS,
-      address: process.env.EMAIL_SENDER_ADDRESS,
+      name: env.EMAIL_SENDER_ADDRESS,
+      address: env.EMAIL_SENDER_ADDRESS,
     };
 
     const config = {
-      apiKey: process.env.MAILGUN_API_KEY,
-      host: process.env.MAILGUN_API_HOST,
-      domain: process.env.MAILGUN_DOMAIN,
+      apiKey: env.MAILGUN_API_KEY,
+      host: env.MAILGUN_API_HOST,
+      domain: env.MAILGUN_DOMAIN,
     };
 
     this.mailgunClient = new mailgun(config);

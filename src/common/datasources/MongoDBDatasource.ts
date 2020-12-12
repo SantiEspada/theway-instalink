@@ -1,14 +1,18 @@
 import * as MongoDb from 'mongodb';
 
+interface MongoDBDatasourceConfig {
+  connectionUri: string;
+  db: string;
+}
 export class MongoDBDatasource {
   private cachedClient: MongoDb.MongoClient;
 
-  private readonly config;
+  private readonly config: MongoDBDatasourceConfig;
 
   constructor(env = process.env) {
     this.config = {
-      db: process.env.DATABASE_NAME,
-      connectionUri: process.env.DATABASE_CONNECTION_URL,
+      db: env.DATABASE_NAME,
+      connectionUri: env.DATABASE_CONNECTION_URL,
     };
   }
 

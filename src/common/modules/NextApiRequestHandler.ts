@@ -63,7 +63,7 @@ export class NextApiRequestHandler<TRequestHandler extends RequestHandler> {
   ): PostApiRequest {
     const apiRequest: PostApiRequest = {
       method: ApiRequestMethod.POST,
-      body: nextApiRequest.body,
+      body: { ...nextApiRequest.query, ...nextApiRequest.body },
     };
 
     return apiRequest;

@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes';
-import { ApiError } from 'next/dist/next-server/server/api-utils';
 import { nanoid } from 'nanoid';
 import dedent from 'dedent-tabs';
 
@@ -12,6 +11,7 @@ import { EmailMessage } from '../../common/models/EmailMessage';
 import { EmailSendDTO } from '../../common/models/EmailSendDTO';
 import { EmailService } from '../../common/services/EmailService';
 import { MailgunEmailService } from '../../common/services/MailgunEmailService';
+import { ApiError } from '../../common/models/ApiError';
 
 export interface CreateAuthSessionInput {
   email: string;
@@ -32,8 +32,8 @@ export class CreateAuthSessionInteractor
     private readonly authSessionRepository: AuthSessionRepository = new MongoDBAuthSessionRepository(),
     private readonly emailService: EmailService = new MailgunEmailService()
   ) {
-    this.allowedEmailDomains = process.env.ALLOWED_EMAIL_DOMAINS.split(',');
-    this.baseUrl = process.env.BASE_URL;
+    this.allowedEmailDomains = env.ALLOWED_EMAIL_DOMAINS.split(',');
+    this.baseUrl = env.BASE_URL;
   }
 
   public async interact(
@@ -65,7 +65,7 @@ export class CreateAuthSessionInteractor
     );
 
     if (!isValid) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid email');
+      throw new ApiError('Invalid email', StatusCodes.BAD_REQUEST);
     }
 
     return isValid;
@@ -85,7 +85,7 @@ export class CreateAuthSessionInteractor
   }
 
   private generateLoginLink(authSession: AuthSession): string {
-    const emailLink = `${this.baseUrl}/auth/login?sessionId=${authSession.id}`;
+    const emailLink = `${this.baseUrl}/?sessionId=${authSession.id}`;
 
     return emailLink;
   }

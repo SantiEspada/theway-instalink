@@ -1,5 +1,5 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-import { ApiError } from 'next/dist/next-server/server/api-utils';
+import { ApiError } from '../models/ApiError';
 
 import {
   ApiRequest,
@@ -41,15 +41,15 @@ export abstract class RequestHandler {
 
   protected async handleGet(request: GetApiRequest): Promise<ApiResponse> {
     throw new ApiError(
-      StatusCodes.NOT_IMPLEMENTED,
-      ReasonPhrases.NOT_IMPLEMENTED
+      ReasonPhrases.NOT_IMPLEMENTED,
+      StatusCodes.NOT_IMPLEMENTED
     );
   }
 
   protected async handlePost(request: PostApiRequest): Promise<ApiResponse> {
     throw new ApiError(
-      StatusCodes.NOT_IMPLEMENTED,
-      ReasonPhrases.NOT_IMPLEMENTED
+      ReasonPhrases.NOT_IMPLEMENTED,
+      StatusCodes.NOT_IMPLEMENTED
     );
   }
 
