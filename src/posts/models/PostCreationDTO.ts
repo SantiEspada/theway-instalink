@@ -5,4 +5,5 @@ export interface PostCreationDTO {
   title: string;
   url: string;
   pictureUrl: string;
+  publishedAt: Date;
 }
