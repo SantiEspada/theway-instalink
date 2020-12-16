@@ -44,7 +44,13 @@ export class MongoDBPostRepository implements PostRepository {
   public async find(findDTO: PostFindDTO): Promise<List<Post>> {
     const collection = await this.getCollection();
 
-    const postDocuments = await collection.find(findDTO).toArray();
+    const { limit = 0, ...filterQuery } = findDTO;
+
+    const postDocuments = await collection
+      .find(filterQuery)
+      .limit(limit)
+      .sort('createdAt', 1)
+      .toArray();
 
     const postList = this.adaptDocumentsToPostList(postDocuments);
 
@@ -73,6 +79,7 @@ export class MongoDBPostRepository implements PostRepository {
       title: document.title,
       url: document.url,
       pictureUrl: document.pictureUrl,
+      publishedAt: document.publishedAt,
     };
 
     return post;
