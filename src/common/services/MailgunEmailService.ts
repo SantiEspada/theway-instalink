@@ -15,7 +15,7 @@ export class MailgunEmailService implements EmailService {
 
   constructor(env = process.env) {
     this.senderInfo = {
-      name: env.EMAIL_SENDER_ADDRESS,
+      name: env.EMAIL_SENDER_NAME,
       address: env.EMAIL_SENDER_ADDRESS,
     };
 
