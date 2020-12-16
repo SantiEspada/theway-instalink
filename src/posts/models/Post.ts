@@ -10,4 +10,5 @@ export interface Post extends Entity {
   title: string;
   url: string;
   pictureUrl: string;
+  publishedAt: Date;
 }
