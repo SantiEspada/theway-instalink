@@ -1,4 +1,5 @@
 import mailgun from 'mailgun-js';
+import { nanoid } from 'nanoid';
 
 import { EmailService } from './EmailService';
 import { EmailSendDTO } from '../models/EmailSendDTO';
@@ -36,12 +37,13 @@ export class MailgunEmailService implements EmailService {
 
     const from = `${this.senderInfo.name} <${this.senderInfo.address}>`;
 
-    const emailData: mailgun.messages.SendData = {
+    const emailData = {
       from,
       to,
       subject,
       text,
       html,
+      'h:X-Entity-Ref-ID': nanoid(),
     };
 
     await this.mailgunClient.messages().send(emailData);
