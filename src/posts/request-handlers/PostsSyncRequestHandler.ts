@@ -47,7 +47,7 @@ export class PostsSyncRequestHandler extends RequestHandler {
     value: unknown
   ): value is PostsSyncRequestHandlerRequestBody {
     const schema: Describe<PostsSyncRequestHandlerRequestBody> = object({
-      sources: array(enums([PostSource.blog])),
+      sources: array(enums([PostSource.blog, PostSource.instagram])),
     });
 
     return is(value, schema);

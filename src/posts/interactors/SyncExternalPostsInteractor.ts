@@ -8,6 +8,7 @@ import { MongoDBPostRepository } from '../repositories/MongoDBPostRepository';
 import { PostRepository } from '../repositories/PostRepository';
 import { ExternalPostService } from '../services/ExternalPostService';
 import { GhostExternalPostService } from '../services/GhostExternalPostService';
+import { InstagramExternalPostService } from '../services/InstagramExternalPostService';
 
 export type SyncExternalPostsInteractorInput = {
   sources: PostSource[];
@@ -23,7 +24,8 @@ export class SyncExternalPostsInteractor
     > {
   constructor(
     private readonly postRepository: PostRepository = new MongoDBPostRepository(),
-    private readonly blogPostService: ExternalPostService = new GhostExternalPostService()
+    private readonly blogPostService: ExternalPostService = new GhostExternalPostService(),
+    private readonly instagramPostService: ExternalPostService = new InstagramExternalPostService()
   ) {}
 
   public async interact(
@@ -77,6 +79,8 @@ export class SyncExternalPostsInteractor
     switch (source) {
       case PostSource.blog:
         return this.blogPostService.getPosts(fromDate);
+      case PostSource.instagram:
+        return this.instagramPostService.getPosts(fromDate);
       default:
         throw new ApiError(
           `Fetching posts from ${source} is not implemented`,
