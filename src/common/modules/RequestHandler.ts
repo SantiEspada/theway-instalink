@@ -1,4 +1,6 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { AuthTokenService } from '../../auth/services/AuthTokenService';
+import { JsonWebTokenAuthTokenService } from '../../auth/services/JsonWebTokenAuthTokenService';
 import { ApiError } from '../models/ApiError';
 
 import {
@@ -11,6 +13,9 @@ import { ApiResponse } from '../models/ApiResponse';
 
 export abstract class RequestHandler {
   protected abstract allowedMethods: ApiRequestMethod[];
+  protected isPublic: boolean = false;
+
+  constructor(private readonly authTokenservice: AuthTokenService = new JsonWebTokenAuthTokenService()) {}
 
   public async handle(request: ApiRequest): Promise<ApiResponse> {
     const isRequestMethodAllowed = this.allowedMethods.includes(request.method);
@@ -22,15 +27,19 @@ export abstract class RequestHandler {
     let response: ApiResponse;
 
     try {
-      switch (request.method) {
-        case ApiRequestMethod.GET:
-          response = await this.handleGet(request);
-          break;
-        case ApiRequestMethod.POST:
-          response = await this.handlePost(request);
-          break;
-        default:
-          response = this.handleNotAllowedMethod();
+      const isAuthorized = this.isPublic || await this.isRequestAuthorized(request);
+
+      if (isAuthorized) {
+        switch (request.method) {
+          case ApiRequestMethod.GET:
+            response = await this.handleGet(request);
+            break;
+          case ApiRequestMethod.POST:
+            response = await this.handlePost(request);
+            break;
+          default:
+            response = this.handleNotAllowedMethod();
+        }
       }
     } catch (err) {
       response = this.handleError(err);
@@ -87,5 +96,17 @@ export abstract class RequestHandler {
     };
 
     return apiResponse;
+  }
+
+  private async isRequestAuthorized(request: ApiRequest): Promise<true | never> {
+    if (request.headers && 'authorization' in request.headers) {
+      const token = request.headers.authorization.split('Bearer ')[1];
+
+      if (this.authTokenservice.verifyToken({ token }) ) {
+        return true;
+      }
+    } else {
+      throw new ApiError('Authorization not present in request', StatusCodes.UNAUTHORIZED);
+    }
   }
 }

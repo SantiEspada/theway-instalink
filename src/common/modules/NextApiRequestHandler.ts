@@ -52,6 +52,7 @@ export class NextApiRequestHandler<TRequestHandler extends RequestHandler> {
   ): GetApiRequest {
     const apiRequest: GetApiRequest = {
       method: ApiRequestMethod.GET,
+      headers: nextApiRequest.headers as Record<string, string>,
       query: nextApiRequest.query,
     };
 
@@ -63,6 +64,7 @@ export class NextApiRequestHandler<TRequestHandler extends RequestHandler> {
   ): PostApiRequest {
     const apiRequest: PostApiRequest = {
       method: ApiRequestMethod.POST,
+      headers: nextApiRequest.headers as Record<string, string>,
       body: { ...nextApiRequest.query, ...nextApiRequest.body },
     };
 

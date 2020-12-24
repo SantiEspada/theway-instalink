@@ -89,7 +89,7 @@ export class CreateAuthSessionInteractor
   }
 
   private generateLoginLink(authSession: AuthSession): string {
-    const emailLink = `${this.BASE_URL}/?sessionId=${authSession.id}`;
+    const emailLink = `${this.BASE_URL}/auth/login?sessionId=${authSession.id}`;
 
     return emailLink;
   }
