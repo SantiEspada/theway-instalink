@@ -5,6 +5,7 @@ export enum ApiRequestMethod {
 
 interface BaseApiRequest {
   method: ApiRequestMethod;
+  headers: Record<string, string>
 }
 
 export interface GetApiRequest extends BaseApiRequest {

@@ -10,7 +10,7 @@ import { MongoDBAuthSessionRepository } from '../repositories/MongoDBAuthSession
 import { EmailMessage } from '../../common/models/EmailMessage';
 import { EmailSendDTO } from '../../common/models/EmailSendDTO';
 import { EmailService } from '../../common/services/EmailService';
-import { MailgunEmailService } from '../../common/services/MailgunEmailService';
+import { EmailServiceFactory } from '../../common/services/EmailServiceFactory';
 import { ApiError } from '../../common/models/ApiError';
 
 export interface CreateAuthSessionInput {
@@ -24,16 +24,20 @@ export interface CreateAuthSessionOutput {
 
 export class CreateAuthSessionInteractor
   implements Interactor<CreateAuthSessionInput, CreateAuthSessionOutput> {
-  private readonly allowedEmailDomains: string[];
-  private readonly baseUrl: string;
+  private readonly ALLOWED_EMAIL_DOMAINS: string[];
+  private readonly BASE_URL: string;
+
+  private readonly emailService: EmailService;
 
   constructor(
     env = process.env,
     private readonly authSessionRepository: AuthSessionRepository = new MongoDBAuthSessionRepository(),
-    private readonly emailService: EmailService = new MailgunEmailService()
+    emailServiceFactory: EmailServiceFactory = new EmailServiceFactory()
   ) {
-    this.allowedEmailDomains = env.ALLOWED_EMAIL_DOMAINS.split(',');
-    this.baseUrl = env.BASE_URL;
+    this.ALLOWED_EMAIL_DOMAINS = env.ALLOWED_EMAIL_DOMAINS.split(',');
+    this.BASE_URL = env.BASE_URL;
+
+    this.emailService = emailServiceFactory.create();
   }
 
   public async interact(
@@ -60,7 +64,7 @@ export class CreateAuthSessionInteractor
   }
 
   private isValidEmail(email: string): true | never {
-    const isValid = this.allowedEmailDomains.some((allowedEmailDomain) =>
+    const isValid = this.ALLOWED_EMAIL_DOMAINS.some((allowedEmailDomain) =>
       email.endsWith(allowedEmailDomain)
     );
 
@@ -85,7 +89,7 @@ export class CreateAuthSessionInteractor
   }
 
   private generateLoginLink(authSession: AuthSession): string {
-    const emailLink = `${this.baseUrl}/?sessionId=${authSession.id}`;
+    const emailLink = `${this.BASE_URL}/auth/login?sessionId=${authSession.id}`;
 
     return emailLink;
   }
@@ -133,6 +137,13 @@ export class CreateAuthSessionInteractor
       message: emailMessage,
     };
 
-    await this.emailService.sendEmail(sendDTO);
+    try {
+      await this.emailService.sendEmail(sendDTO);
+    } catch (err) {
+      throw new ApiError(
+        `Login email cannot be sent: ${err.message}`,
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 }

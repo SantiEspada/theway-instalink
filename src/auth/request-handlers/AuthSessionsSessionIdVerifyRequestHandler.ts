@@ -22,6 +22,7 @@ export interface AuthSessionsSessionIdVerifyRequestResponse {
 
 export class AuthSessionsSessionIdVerifyRequestHandler extends RequestHandler {
   protected allowedMethods: ApiRequestMethod[] = [ApiRequestMethod.POST];
+  protected isPublic: boolean = true;
 
   constructor(
     private readonly verifyAuthSessionInteractor: VerifyAuthSessionInteractor = new VerifyAuthSessionInteractor()

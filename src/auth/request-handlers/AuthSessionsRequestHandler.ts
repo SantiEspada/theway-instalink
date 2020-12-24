@@ -21,6 +21,7 @@ export interface AuthSessionsRequestResponse {
 
 export class AuthSessionsRequestHandler extends RequestHandler {
   protected allowedMethods: ApiRequestMethod[] = [ApiRequestMethod.POST];
+  protected isPublic: boolean = true;
 
   constructor(
     private readonly createAuthSessionInteractor: CreateAuthSessionInteractor = new CreateAuthSessionInteractor()
