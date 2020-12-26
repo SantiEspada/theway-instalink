@@ -38,11 +38,12 @@ export class CreateLinkInteractor
       this.findPost(destinationPostId),
     ]);
 
-    const { pictureUrl } = sourcePost;
+    const { pictureUrl, publishedAt } = sourcePost;
     const { title, url: destinationUrl } = destinationPost;
 
     const linkCreationDTO: LinkCreationDTO = {
       sourcePostId,
+      publishedAt,
       title,
       destinationUrl,
       pictureUrl,

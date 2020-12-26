@@ -56,7 +56,7 @@ export class MongoDBLinkRepository implements LinkRepository {
     const linkDocuments = await collection
       .find(filterQuery)
       .limit(limit)
-      .sort('createdAt', 1)
+      .sort('publishedAt', 1)
       .toArray();
 
     const linkList = this.adaptDocumentsToLinkList(linkDocuments);
@@ -86,6 +86,8 @@ export class MongoDBLinkRepository implements LinkRepository {
     const link: Link = {
       id: document.id,
       createdAt: document.createdAt,
+      sourcePostId: document.sourcePostId,
+      publishedAt: new Date(document.publishedAt),
       title: document.title,
       destinationUrl: document.destinationUrl,
       pictureUrl: document.pictureUrl,
