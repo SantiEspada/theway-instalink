@@ -8,6 +8,8 @@ import { Post, PostSource } from '../models/Post';
 import { PostCreationDTO } from '../models/PostCreationDTO';
 import { PostFindDTO } from '../models/PostFindDTO';
 import { PostDeletionDTO } from '../models/PostDeletionDTO';
+import { ApiError } from '../../common/models/ApiError';
+import { StatusCodes } from 'http-status-codes';
 
 export class MongoDBPostRepository implements PostRepository {
   private readonly dbCollection = 'posts';
@@ -61,6 +63,10 @@ export class MongoDBPostRepository implements PostRepository {
     const collection = await this.getCollection();
 
     const document = await collection.findOne({ id: findDTO.id });
+
+    if (!document) {
+      throw new ApiError('Post not found', StatusCodes.NOT_FOUND);
+    }
 
     const post = this.adaptDocumentToPost(document);
 
