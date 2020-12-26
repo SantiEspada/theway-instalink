@@ -33,8 +33,6 @@ export class InstagramExternalPostService implements ExternalPostService {
   }
 
   public async getPosts(from?: Date): Promise<ExternalPost[]> {
-    console.log(this.instagramMediaRequestUrl);
-
     const instagramMediaRequest = await fetch(this.instagramMediaRequestUrl);
 
     const instagramMediaResponse:
