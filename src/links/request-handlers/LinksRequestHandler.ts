@@ -54,7 +54,7 @@ export class LinkRequestHandler extends RequestHandler {
 
     if (sortBy && sortDirection) {
       sort = {
-        by: sortBy,
+        by: sortBy as keyof Link,
         direction: Number(sortDirection),
       };
     }
