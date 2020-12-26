@@ -10,6 +10,7 @@ import { LinkFindDTO } from '../models/LinkFindDTO';
 import { LinkDeletionDTO } from '../models/LinkDeletionDTO';
 import { ApiError } from '../../common/models/ApiError';
 import { StatusCodes } from 'http-status-codes';
+import { SortDirection } from '../../common/models/SortDirection';
 
 export class MongoDBLinkRepository implements LinkRepository {
   private readonly dbCollection = 'links';
@@ -51,12 +52,15 @@ export class MongoDBLinkRepository implements LinkRepository {
   public async find(findDTO: LinkFindDTO): Promise<List<Link>> {
     const collection = await this.getCollection();
 
-    const { limit = 0, ...filterQuery } = findDTO;
+    const { limit = 0, sort, ...filterQuery } = findDTO;
+
+    const sortBy = sort?.by || 'publishedAt';
+    const sortDirection = sort?.direction || SortDirection.desc;
 
     const linkDocuments = await collection
       .find(filterQuery)
       .limit(limit)
-      .sort('publishedAt', 1)
+      .sort(sortBy, sortDirection)
       .toArray();
 
     const linkList = this.adaptDocumentsToLinkList(linkDocuments);
