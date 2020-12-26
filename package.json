@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "yarn check-env",
     "dev": "next dev",
+    "prebuild": "yarn check-env",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "check-env": "node ./scripts/check-env.js"
   },
   "dependencies": {
     "@tryghost/content-api": "^1.4.11",

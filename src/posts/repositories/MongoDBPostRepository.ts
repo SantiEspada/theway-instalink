@@ -8,6 +8,9 @@ import { Post, PostSource } from '../models/Post';
 import { PostCreationDTO } from '../models/PostCreationDTO';
 import { PostFindDTO } from '../models/PostFindDTO';
 import { PostDeletionDTO } from '../models/PostDeletionDTO';
+import { ApiError } from '../../common/models/ApiError';
+import { StatusCodes } from 'http-status-codes';
+import { SortDirection } from '../../common/models/SortDirection';
 
 export class MongoDBPostRepository implements PostRepository {
   private readonly dbCollection = 'posts';
@@ -49,7 +52,7 @@ export class MongoDBPostRepository implements PostRepository {
     const postDocuments = await collection
       .find(filterQuery)
       .limit(limit)
-      .sort('createdAt', 1)
+      .sort('createdAt', SortDirection.desc)
       .toArray();
 
     const postList = this.adaptDocumentsToPostList(postDocuments);
@@ -61,6 +64,10 @@ export class MongoDBPostRepository implements PostRepository {
     const collection = await this.getCollection();
 
     const document = await collection.findOne({ id: findDTO.id });
+
+    if (!document) {
+      throw new ApiError('Post not found', StatusCodes.NOT_FOUND);
+    }
 
     const post = this.adaptDocumentToPost(document);
 

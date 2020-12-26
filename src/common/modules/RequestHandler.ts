@@ -13,9 +13,11 @@ import { ApiResponse } from '../models/ApiResponse';
 
 export abstract class RequestHandler {
   protected abstract allowedMethods: ApiRequestMethod[];
-  protected isPublic: boolean = false;
+  protected publicMethods: ApiRequestMethod[] = [];
 
-  constructor(private readonly authTokenservice: AuthTokenService = new JsonWebTokenAuthTokenService()) {}
+  constructor(
+    private readonly authTokenservice: AuthTokenService = new JsonWebTokenAuthTokenService()
+  ) {}
 
   public async handle(request: ApiRequest): Promise<ApiResponse> {
     const isRequestMethodAllowed = this.allowedMethods.includes(request.method);
@@ -27,7 +29,10 @@ export abstract class RequestHandler {
     let response: ApiResponse;
 
     try {
-      const isAuthorized = this.isPublic || await this.isRequestAuthorized(request);
+      const isPublic = this.publicMethods.includes(request.method);
+
+      const isAuthorized =
+        isPublic || (await this.isRequestAuthorized(request));
 
       if (isAuthorized) {
         switch (request.method) {
@@ -98,15 +103,20 @@ export abstract class RequestHandler {
     return apiResponse;
   }
 
-  private async isRequestAuthorized(request: ApiRequest): Promise<true | never> {
+  private async isRequestAuthorized(
+    request: ApiRequest
+  ): Promise<true | never> {
     if (request.headers && 'authorization' in request.headers) {
       const token = request.headers.authorization.split('Bearer ')[1];
 
-      if (this.authTokenservice.verifyToken({ token }) ) {
+      if (this.authTokenservice.verifyToken({ token })) {
         return true;
       }
     } else {
-      throw new ApiError('Authorization not present in request', StatusCodes.UNAUTHORIZED);
+      throw new ApiError(
+        'Authorization not present in request',
+        StatusCodes.UNAUTHORIZED
+      );
     }
   }
 }
