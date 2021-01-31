@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 
 import { LinkGrid } from '../links/components/LinkGrid';
 import { Link } from '../links/models/Link';
@@ -8,11 +8,13 @@ import { SortDirection } from '../common/models/SortDirection';
 import styles from './Home.module.scss';
 import { LogoFull } from '../common/components/svg/LogoFull';
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryParams = new URLSearchParams({
     sortBy: 'createdAt',
     sortDirection: SortDirection.desc.toString(),
   });
+
+  console.log(`${process.env.BASE_URL}/api/links?${queryParams}`);
 
   // TODO: BASE_URL should come from some config
   const linksResponse = await fetch(
