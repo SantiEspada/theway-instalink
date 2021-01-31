@@ -14,12 +14,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     sortDirection: SortDirection.desc.toString(),
   });
 
-  console.log(`${process.env.BASE_URL}/api/links?${queryParams}`);
-
   // TODO: BASE_URL should come from some config
-  const linksResponse = await fetch(
-    `${process.env.BASE_URL}/api/links?${queryParams}`
-  );
+  let baseUrl = process.env.BASE_URL;
+
+  if (!baseUrl.startsWith('http')) {
+    baseUrl = `https://${baseUrl}`;
+  }
+
+  const linksApiUrl = `${baseUrl}/api/links?${queryParams}`;
+  console.log(linksApiUrl);
+
+  const linksResponse = await fetch(linksApiUrl);
   const { items: links } = await linksResponse.json();
 
   return {
