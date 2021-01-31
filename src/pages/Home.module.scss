@@ -1,0 +1,34 @@
+.home {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  &__main {
+    max-width: 460px;
+    padding: 60px 22px;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+
+    & > svg {
+      height: 60px;
+      margin-top: -16px;
+    }
+
+    &__link {
+      margin-left: auto;
+      font-size: 18px;
+      font-weight: 500;
+      color: #500d68 !important;
+    }
+  }
+
+  &__info {
+    margin: 24px 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+}
