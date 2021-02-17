@@ -45,7 +45,7 @@ async function exec(command) {
 }
 
 async function updateSecret({ prefix, name, value }) {
-  const secretName = `${prefix}__${name}`;
+  const secretName = `${prefix}__${name}`.toLowerCase();
 
   const commands = [
     `vercel secrets rm ${secretName} -y`,
