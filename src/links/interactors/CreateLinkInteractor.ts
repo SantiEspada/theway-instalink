@@ -9,6 +9,9 @@ import { MongoDBLinkRepository } from '../repositories/MongoDBLinkRepository';
 import { Post } from '../../posts/models/Post';
 import { ApiError } from '../../common/models/ApiError';
 import { LinkCreationDTO } from '../models/LinkCreationDTO';
+import { FileService } from '../../common/services/FileService';
+import { AwsS3FileService } from '../../common/services/AwsS3FileService';
+import { nanoid } from 'nanoid';
 
 export type CreateLinkInput = {
   sourcePostId: string;
@@ -20,7 +23,8 @@ export class CreateLinkInteractor
   implements Interactor<CreateLinkInput, CreateLinkOutput> {
   constructor(
     private readonly postRepository: PostRepository = new MongoDBPostRepository(),
-    private readonly linkRepository: LinkRepository = new MongoDBLinkRepository()
+    private readonly linkRepository: LinkRepository = new MongoDBLinkRepository(),
+    private readonly fileService: FileService = new AwsS3FileService()
   ) {}
 
   public async interact(input: CreateLinkInput): Promise<CreateLinkOutput> {
@@ -38,8 +42,10 @@ export class CreateLinkInteractor
       this.findPost(destinationPostId),
     ]);
 
-    const { pictureUrl, publishedAt } = sourcePost;
+    const { publishedAt } = sourcePost;
     const { title, url: destinationUrl } = destinationPost;
+
+    const pictureUrl = await this.uploadImage(sourcePost.pictureUrl);
 
     const linkCreationDTO: LinkCreationDTO = {
       sourcePostId,
@@ -72,5 +78,16 @@ export class CreateLinkInteractor
     }
 
     return doLinksFromSourceExist;
+  }
+
+  private async uploadImage(sourceUrl: string): Promise<string> {
+    const destinationFilepath = nanoid();
+
+    const { uploadedFileUrl } = await this.fileService.uploadFile({
+      sourceUrl: sourceUrl,
+      destinationFilepath,
+    });
+
+    return uploadedFileUrl;
   }
 }

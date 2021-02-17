@@ -10,6 +10,6 @@ const requiredEnvVariables = dotenv.parse(fs.readFileSync(envExampleFilePath));
 
 for (const envVariable of Object.keys(requiredEnvVariables)) {
   if (!(envVariable in process.env)) {
-    throw new Error(`Missing ${envVariable} in path`);
+    throw new Error(`Missing ${envVariable} in env`);
   }
 }
