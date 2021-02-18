@@ -1,41 +1,52 @@
 import React from 'react';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 
-import { LinkGrid } from '../links/components/LinkGrid';
-import { Link } from '../links/models/Link';
+import { LinkCardLink, LinkGrid } from '../links/components/LinkGrid';
 import { SortDirection } from '../common/models/SortDirection';
+import { LogoFull } from '../common/components/svg/LogoFull';
+import { FindLinksInteractor } from '../links/interactors/FindLinksInteractor';
+import { Link } from '../links/models/Link';
 
 import styles from './Home.module.scss';
-import { LogoFull } from '../common/components/svg/LogoFull';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const queryParams = new URLSearchParams({
-    sortBy: 'createdAt',
-    sortDirection: SortDirection.desc.toString(),
+const findLinksInteractor = new FindLinksInteractor();
+
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const { items: links } = await findLinksInteractor.interact({
+    sort: {
+      by: 'createdAt',
+      direction: SortDirection.desc,
+    },
   });
 
-  // TODO: BASE_URL should come from some config
-  let baseUrl = process.env.BASE_URL;
+  function transformLinkToLinkCardLink(link: Link): LinkCardLink {
+    const { id, pictureUrl, destinationUrl, title } = link;
 
-  if (!baseUrl.startsWith('http')) {
-    baseUrl = `https://${baseUrl}`;
+    const linkCardLink: LinkCardLink = {
+      id,
+      pictureUrl,
+      destinationUrl,
+      title,
+    };
+
+    return linkCardLink;
   }
 
-  const linksApiUrl = `${baseUrl}/api/links?${queryParams}`;
-  console.log(linksApiUrl);
+  const linkCardLinks = links.map(transformLinkToLinkCardLink);
 
-  const linksResponse = await fetch(linksApiUrl);
-  const { items: links } = await linksResponse.json();
+  // TODO: again, maybe this should be in some config
+  const revalidateTimeSecs = 60;
 
   return {
     props: {
-      links,
+      links: linkCardLinks,
     },
+    revalidate: revalidateTimeSecs,
   };
 };
 
 export interface HomeProps {
-  links: Link[];
+  links: LinkCardLink[];
 }
 
 export default function Home(props: HomeProps): JSX.Element {
