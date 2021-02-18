@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 
 import { LinkGrid } from '../links/components/LinkGrid';
 import { Link } from '../links/models/Link';
@@ -8,7 +8,7 @@ import { SortDirection } from '../common/models/SortDirection';
 import styles from './Home.module.scss';
 import { LogoFull } from '../common/components/svg/LogoFull';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getStaticProps: GetStaticProps = async () => {
   const queryParams = new URLSearchParams({
     sortBy: 'createdAt',
     sortDirection: SortDirection.desc.toString(),
@@ -22,15 +22,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const linksApiUrl = `${baseUrl}/api/links?${queryParams}`;
-  console.log(linksApiUrl);
 
   const linksResponse = await fetch(linksApiUrl);
   const { items: links } = await linksResponse.json();
+
+  // TODO: again, maybe this should be in some config
+  const revalidateTimeSecs = 60;
 
   return {
     props: {
       links,
     },
+    revalidate: revalidateTimeSecs,
   };
 };
 
