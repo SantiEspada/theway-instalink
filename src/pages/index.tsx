@@ -1,14 +1,15 @@
 import React from 'react';
 import { GetStaticProps } from 'next';
 
-import { LinkGrid } from '../links/components/LinkGrid';
+import { LinkCardLink, LinkGrid } from '../links/components/LinkGrid';
 import { Link } from '../links/models/Link';
 import { SortDirection } from '../common/models/SortDirection';
 
 import styles from './Home.module.scss';
 import { LogoFull } from '../common/components/svg/LogoFull';
+import { List } from '../common/models/List';
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   const queryParams = new URLSearchParams({
     sortBy: 'createdAt',
     sortDirection: SortDirection.desc.toString(),
@@ -24,21 +25,30 @@ export const getStaticProps: GetStaticProps = async () => {
   const linksApiUrl = `${baseUrl}/api/links?${queryParams}`;
 
   const linksResponse = await fetch(linksApiUrl);
-  const { items: links } = await linksResponse.json();
+  const { items: links }: List<Link> = await linksResponse.json();
+
+  const linkCardLinks = links.map(
+    ({ id, pictureUrl, destinationUrl, title }) => ({
+      id,
+      pictureUrl,
+      destinationUrl,
+      title,
+    })
+  );
 
   // TODO: again, maybe this should be in some config
   const revalidateTimeSecs = 60;
 
   return {
     props: {
-      links,
+      links: linkCardLinks,
     },
     revalidate: revalidateTimeSecs,
   };
 };
 
 export interface HomeProps {
-  links: Link[];
+  links: LinkCardLink[];
 }
 
 export default function Home(props: HomeProps): JSX.Element {

@@ -45,8 +45,13 @@ function LinkCard(props: LinkCardProps): JSX.Element {
   );
 }
 
+export type LinkCardLink = Pick<
+  Link,
+  'id' | 'pictureUrl' | 'destinationUrl' | 'title'
+>;
+
 export interface LinkGridProps {
-  links: Link[];
+  links: LinkCardLink[];
   onClick: (linkId: string) => void;
 }
 
