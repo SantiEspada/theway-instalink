@@ -2,39 +2,37 @@ import React from 'react';
 import { GetStaticProps } from 'next';
 
 import { LinkCardLink, LinkGrid } from '../links/components/LinkGrid';
-import { Link } from '../links/models/Link';
 import { SortDirection } from '../common/models/SortDirection';
+import { LogoFull } from '../common/components/svg/LogoFull';
+import { FindLinksInteractor } from '../links/interactors/FindLinksInteractor';
+import { Link } from '../links/models/Link';
 
 import styles from './Home.module.scss';
-import { LogoFull } from '../common/components/svg/LogoFull';
-import { List } from '../common/models/List';
+
+const findLinksInteractor = new FindLinksInteractor();
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  const queryParams = new URLSearchParams({
-    sortBy: 'createdAt',
-    sortDirection: SortDirection.desc.toString(),
+  const { items: links } = await findLinksInteractor.interact({
+    sort: {
+      by: 'createdAt',
+      direction: SortDirection.desc,
+    },
   });
 
-  // TODO: BASE_URL should come from some config
-  let baseUrl = process.env.BASE_URL;
+  function transformLinkToLinkCardLink(link: Link): LinkCardLink {
+    const { id, pictureUrl, destinationUrl, title } = link;
 
-  if (!baseUrl.startsWith('http')) {
-    baseUrl = `https://${baseUrl}`;
-  }
-
-  const linksApiUrl = `${baseUrl}/api/links?${queryParams}`;
-
-  const linksResponse = await fetch(linksApiUrl);
-  const { items: links }: List<Link> = await linksResponse.json();
-
-  const linkCardLinks = links.map(
-    ({ id, pictureUrl, destinationUrl, title }) => ({
+    const linkCardLink: LinkCardLink = {
       id,
       pictureUrl,
       destinationUrl,
       title,
-    })
-  );
+    };
+
+    return linkCardLink;
+  }
+
+  const linkCardLinks = links.map(transformLinkToLinkCardLink);
 
   // TODO: again, maybe this should be in some config
   const revalidateTimeSecs = 60;
