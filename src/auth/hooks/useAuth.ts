@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { boolean, is } from 'superstruct';
+import { useLocalStorageState } from '../../common/hooks/useLocalStorageState';
 import {
   AuthSessionsRequestBody,
   AuthSessionsRequestResponse,
@@ -24,11 +25,23 @@ export interface UseAuth {
 }
 
 export function useAuth(): UseAuth {
-  const [email, setEmail] = useState<string | null>(null);
-  const [nonce, setNonce] = useState<string | null>(null);
+  const [email, setEmail] = useLocalStorageState<string | null>(
+    'instaLink.authSession.email',
+    null
+  );
+  const [nonce, setNonce] = useLocalStorageState<string | null>(
+    'instaLink.authSession.nonce',
+    null
+  );
 
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useLocalStorageState<string | null>(
+    'instaLink.authSession.sessionId',
+    null
+  );
+  const [token, setToken] = useLocalStorageState<string | null>(
+    'instaLink.authSession.token',
+    null
+  );
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<UseAuthUser>(null);
@@ -52,49 +65,6 @@ export function useAuth(): UseAuth {
       setIsLoggedIn(false);
     }
   }, [token]);
-
-  useEffect(() => {
-    console.log('me loguié');
-    localStorage.setItem('instaLink.authSession.email', email);
-  }, [email]);
-
-  useEffect(() => {
-    console.log('me loguié 2');
-    localStorage.setItem('instaLink.authSession.nonce', nonce);
-  }, [nonce]);
-
-  useEffect(() => {
-    localStorage.setItem('instaLink.authSession.sessionId', sessionId);
-  }, [sessionId]);
-
-  useEffect(() => {
-    localStorage.setItem('instaLink.authSession.token', token);
-  }, [token]);
-
-  useEffect(() => {
-    const localStorageEmail = localStorage.getItem(
-      'instaLink.authSession.email'
-    );
-
-    if (localStorageEmail) {
-      setEmail(localStorageEmail);
-    }
-
-    const localStorageNonce = localStorage.getItem(
-      'instaLink.authSession.nonce'
-    );
-    if (localStorageNonce) {
-      setNonce(localStorageNonce);
-    }
-
-    const localStorageToken: string | null = localStorage.getItem(
-      'instaLink.authSession.token'
-    );
-
-    if (localStorageToken) {
-      setToken(localStorageToken);
-    }
-  }, []);
 
   async function sendLoginLink(email: string): Promise<void> {
     const body: AuthSessionsRequestBody = {
