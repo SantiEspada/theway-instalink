@@ -54,10 +54,12 @@ export function useAuth(): UseAuth {
   }, [token]);
 
   useEffect(() => {
+    console.log('me loguié');
     localStorage.setItem('instaLink.authSession.email', email);
   }, [email]);
 
   useEffect(() => {
+    console.log('me loguié 2');
     localStorage.setItem('instaLink.authSession.nonce', nonce);
   }, [nonce]);
 
