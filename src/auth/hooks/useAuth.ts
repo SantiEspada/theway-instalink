@@ -96,39 +96,49 @@ export function useAuth(): UseAuth {
   }
 
   async function verifyLoginLink(candidateSessionId: string): Promise<void> {
-    console.log(email);
-    console.log(nonce);
+    const execute = async (
+      resolve: () => void,
+      reject: (err?: any) => void
+    ) => {
+      // FIXME: this is horrible
+      if (email === undefined || nonce === undefined) {
+        setTimeout(() => execute(resolve, reject));
+      }
 
-    const body: AuthSessionsSessionIdVerifyRequestBody = {
-      id: candidateSessionId,
-      email,
-      nonce,
+      const body: AuthSessionsSessionIdVerifyRequestBody = {
+        id: candidateSessionId,
+        email,
+        nonce,
+      };
+
+      const response = await fetch(
+        `/api/auth/sessions/${candidateSessionId}/verify`,
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept-Type': 'application/json',
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (response.status === StatusCodes.OK) {
+        const {
+          token,
+        } = responseData as AuthSessionsSessionIdVerifyRequestResponse;
+
+        setSessionId(candidateSessionId);
+        setToken(token);
+        resolve();
+      } else {
+        reject(responseData.error);
+      }
     };
 
-    const response = await fetch(
-      `/api/auth/sessions/${candidateSessionId}/verify`,
-      {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept-Type': 'application/json',
-        },
-      }
-    );
-
-    const responseData = await response.json();
-
-    if (response.status === StatusCodes.OK) {
-      const {
-        token,
-      } = responseData as AuthSessionsSessionIdVerifyRequestResponse;
-
-      setSessionId(candidateSessionId);
-      setToken(token);
-    } else {
-      throw new Error(responseData.error);
-    }
+    return new Promise(execute);
   }
 
   return {
