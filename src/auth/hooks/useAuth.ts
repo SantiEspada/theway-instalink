@@ -96,6 +96,9 @@ export function useAuth(): UseAuth {
   }
 
   async function verifyLoginLink(candidateSessionId: string): Promise<void> {
+    console.log(email);
+    console.log(nonce);
+
     const body: AuthSessionsSessionIdVerifyRequestBody = {
       id: candidateSessionId,
       email,
