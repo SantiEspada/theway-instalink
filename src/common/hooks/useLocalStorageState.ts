@@ -4,11 +4,17 @@ export function useLocalStorageState<T = unknown>(
   localStorageKey: string,
   initialValue: T
 ): [value: T, setValue: (newValue: T) => void] {
-  const [value, setValue] = useState<T>(initialValue);
+  const [value, setValue] = useState<T>(undefined);
 
   useEffect(() => {
     if (value === undefined) {
-      setValue(JSON.parse(localStorage.getItem(localStorageKey)));
+      const localStorageValue = localStorage.getItem(localStorageKey);
+
+      if (localStorageValue) {
+        setValue(JSON.parse(localStorageValue));
+      } else {
+        setValue(initialValue);
+      }
     } else {
       localStorage.setItem(localStorageKey, JSON.stringify(value));
     }
