@@ -49,6 +49,8 @@ export function useAuth(): UseAuth {
           id: decodedToken.aud as string,
         };
 
+        console.log(newUser);
+
         setUser(newUser);
         setIsLoggedIn(true);
       } catch (error) {

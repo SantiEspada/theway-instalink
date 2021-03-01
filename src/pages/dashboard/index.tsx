@@ -14,13 +14,12 @@ export function DashboardIndex() {
 
   return isLoggedIn ? (
     <div>
+      <h1>Dashboard</h1>
       <pre>
         <code>{JSON.stringify(user)}</code>
       </pre>
     </div>
-  ) : (
-    <div>hmm</div>
-  );
+  ) : null;
 }
 
 export default dynamic(() => Promise.resolve(DashboardIndex), {
