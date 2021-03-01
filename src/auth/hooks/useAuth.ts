@@ -1,8 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { useEffect, useState } from 'react';
-import { boolean, is } from 'superstruct';
-import { useLocalStorageState } from '../../common/hooks/useLocalStorageState';
+import createPersistedState from 'use-persisted-state';
 import {
   AuthSessionsRequestBody,
   AuthSessionsRequestResponse,
@@ -16,6 +15,8 @@ interface UseAuthUser {
   id: string;
 }
 
+const useAuthState = createPersistedState('count');
+
 export interface UseAuth {
   isLoggedIn: boolean;
   token: string | null;
@@ -25,26 +26,14 @@ export interface UseAuth {
 }
 
 export function useAuth(): UseAuth {
-  const [email, setEmail] = useLocalStorageState<string | null>(
-    'instaLink.authSession.email',
-    null
-  );
-  const [nonce, setNonce] = useLocalStorageState<string | null>(
-    'instaLink.authSession.nonce',
-    null
-  );
+  const [email, setEmail] = useAuthState<string | null>(null);
+  const [nonce, setNonce] = useAuthState<string | null>(null);
 
-  const [sessionId, setSessionId] = useLocalStorageState<string | null>(
-    'instaLink.authSession.sessionId',
-    null
-  );
-  const [token, setToken] = useLocalStorageState<string | null>(
-    'instaLink.authSession.token',
-    null
-  );
+  const [sessionId, setSessionId] = useAuthState<string | null>(null);
+  const [token, setToken] = useAuthState<string | null>(null);
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [user, setUser] = useState<UseAuthUser>(null);
+  const [isLoggedIn, setIsLoggedIn] = useAuthState<boolean>(false);
+  const [user, setUser] = useAuthState<UseAuthUser>(null);
 
   useEffect(() => {
     if (token) {
