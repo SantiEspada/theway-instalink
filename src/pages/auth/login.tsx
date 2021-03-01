@@ -20,7 +20,7 @@ function Login() {
   const [error, setError] = useState<null | string>(null);
   const [step, setStep] = useState<Step>(Step.initial);
 
-  const { isLoggedIn, token, sendLoginLink, verifyLoginLink } = useAuth();
+  const { isLoggedIn, sendLoginLink, verifyLoginLink } = useAuth();
 
   const handleLogin = async (email: string) => {
     setError(null);
@@ -59,6 +59,8 @@ function Login() {
       window.location.replace('/dashboard');
     }
   }, [isLoggedIn]);
+
+  if (isLoggedIn) return null;
 
   return (
     <div className={styles.container}>
