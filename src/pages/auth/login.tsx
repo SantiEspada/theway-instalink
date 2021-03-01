@@ -42,8 +42,6 @@ function Login() {
 
       try {
         await verifyLoginLink(params.get('sessionId'));
-
-        console.log(token);
       } catch (err) {
         setStep(Step.initial);
 

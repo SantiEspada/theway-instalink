@@ -46,10 +46,8 @@ export function useAuth(): UseAuth {
         const decodedToken = jwtDecode<JwtPayload>(token);
 
         const newUser: UseAuthUser = {
-          id: decodedToken.aud as string,
+          id: decodedToken.sub as string,
         };
-
-        console.log(decodedToken);
 
         setUser(newUser);
         setIsLoggedIn(true);
