@@ -15,7 +15,12 @@ interface UseAuthUser {
   id: string;
 }
 
-const useAuthState = createPersistedState('count');
+const useEmailState = createPersistedState('instalink.auth.email');
+const useNonceState = createPersistedState('instalink.auth.nonce');
+const useSessionIdState = createPersistedState('instalink.auth.sessionId');
+const useTokenState = createPersistedState('instalink.auth.token');
+const useIsLoggedInState = createPersistedState('instalink.auth.isLoggedIn');
+const useUserState = createPersistedState('instalink.auth.user');
 
 export interface UseAuth {
   isLoggedIn: boolean;
@@ -26,14 +31,14 @@ export interface UseAuth {
 }
 
 export function useAuth(): UseAuth {
-  const [email, setEmail] = useAuthState<string | null>(null);
-  const [nonce, setNonce] = useAuthState<string | null>(null);
+  const [email, setEmail] = useEmailState<string | null>(null);
+  const [nonce, setNonce] = useNonceState<string | null>(null);
 
-  const [sessionId, setSessionId] = useAuthState<string | null>(null);
-  const [token, setToken] = useAuthState<string | null>(null);
+  const [sessionId, setSessionId] = useSessionIdState<string | null>(null);
+  const [token, setToken] = useTokenState<string | null>(null);
 
-  const [isLoggedIn, setIsLoggedIn] = useAuthState<boolean>(false);
-  const [user, setUser] = useAuthState<UseAuthUser>(null);
+  const [isLoggedIn, setIsLoggedIn] = useIsLoggedInState<boolean>(false);
+  const [user, setUser] = useUserState<UseAuthUser>(null);
 
   useEffect(() => {
     if (token) {
