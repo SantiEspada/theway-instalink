@@ -49,7 +49,7 @@ export function useAuth(): UseAuth {
           id: decodedToken.aud as string,
         };
 
-        console.log(newUser);
+        console.log(decodedToken);
 
         setUser(newUser);
         setIsLoggedIn(true);
