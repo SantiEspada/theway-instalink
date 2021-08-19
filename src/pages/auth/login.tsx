@@ -4,80 +4,11 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
-import {
-  AuthSessionsRequestBody,
-  AuthSessionsRequestResponse,
-} from '../../auth/request-handlers/AuthSessionsRequestHandler';
-import {
-  AuthSessionsSessionIdVerifyRequestBody,
-  AuthSessionsSessionIdVerifyRequestResponse,
-} from '../../auth/request-handlers/AuthSessionsSessionIdVerifyRequestHandler';
-
+import { useAuth } from '../../auth/hooks/useAuth';
 import { Header } from '../../components/Header';
 import { LoginForm } from '../../components/LoginForm';
 
 import styles from './login.module.scss';
-
-async function sendLoginLink(email: string): Promise<void> {
-  const body: AuthSessionsRequestBody = {
-    email,
-  };
-
-  const response = await fetch('/api/auth/sessions', {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept-Type': 'application/json',
-    },
-  });
-
-  const responseData = await response.json();
-
-  if (response.status === StatusCodes.OK) {
-    const { email, nonce } = responseData as AuthSessionsRequestResponse;
-
-    // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
-    localStorage.setItem('instaLink.authSession.email', email);
-    localStorage.setItem('instaLink.authSession.nonce', nonce);
-  } else {
-    throw new Error(responseData.error);
-  }
-}
-
-async function verifyLoginLink(sessionId: string) {
-  // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
-  const email = localStorage.getItem('instaLink.authSession.email');
-  const nonce = localStorage.getItem('instaLink.authSession.nonce');
-
-  const body: AuthSessionsSessionIdVerifyRequestBody = {
-    id: sessionId,
-    email,
-    nonce,
-  };
-
-  const response = await fetch(`/api/auth/sessions/${sessionId}/verify`, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept-Type': 'application/json',
-    },
-  });
-
-  const responseData = await response.json();
-
-  if (response.status === StatusCodes.OK) {
-    const { token } =
-      responseData as AuthSessionsSessionIdVerifyRequestResponse;
-
-    // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
-    localStorage.setItem('instaLink.authSession.id', sessionId);
-    localStorage.setItem('instaLink.authSession.token', token);
-  } else {
-    throw new Error(responseData.error);
-  }
-}
 
 enum Step {
   initial,
@@ -88,6 +19,8 @@ enum Step {
 function Login() {
   const [error, setError] = useState<null | string>(null);
   const [step, setStep] = useState<Step>(Step.initial);
+
+  const { isLoggedIn, sendLoginLink, verifyLoginLink } = useAuth();
 
   const handleLogin = async (email: string) => {
     setError(null);
@@ -101,7 +34,7 @@ function Login() {
     }
   };
 
-  const handleQueryParams = async (location) => {
+  const handleQueryParams = async (location: string) => {
     const params = new URLSearchParams(location);
 
     if (params.has('sessionId')) {
@@ -109,10 +42,6 @@ function Login() {
 
       try {
         await verifyLoginLink(params.get('sessionId'));
-
-        const token = localStorage.getItem('instaLink.authSession.token');
-
-        console.log(token);
       } catch (err) {
         setStep(Step.initial);
 
@@ -124,6 +53,14 @@ function Login() {
   useEffect(() => {
     handleQueryParams(window.location.search);
   }, [window.location.search]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      window.location.replace('/dashboard');
+    }
+  }, [isLoggedIn]);
+
+  if (isLoggedIn) return null;
 
   return (
     <div className={styles.container}>
