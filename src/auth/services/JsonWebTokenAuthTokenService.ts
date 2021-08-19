@@ -48,6 +48,8 @@ export class JsonWebTokenAuthTokenService implements AuthTokenService {
   public adaptJwtTokenToAuthToken(jwtToken: any): AuthToken {
     const { sessionId, email, exp } = jwtToken;
 
+    // TODO: actually check if session exists
+
     const expiresAt = new Date(exp);
 
     const authToken: AuthToken = {

@@ -37,6 +37,7 @@ async function sendLoginLink(email: string): Promise<void> {
   if (response.status === StatusCodes.OK) {
     const { email, nonce } = responseData as AuthSessionsRequestResponse;
 
+    // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
     localStorage.setItem('instaLink.authSession.email', email);
     localStorage.setItem('instaLink.authSession.nonce', nonce);
   } else {
@@ -45,6 +46,7 @@ async function sendLoginLink(email: string): Promise<void> {
 }
 
 async function verifyLoginLink(sessionId: string) {
+  // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
   const email = localStorage.getItem('instaLink.authSession.email');
   const nonce = localStorage.getItem('instaLink.authSession.nonce');
 
@@ -66,10 +68,10 @@ async function verifyLoginLink(sessionId: string) {
   const responseData = await response.json();
 
   if (response.status === StatusCodes.OK) {
-    const {
-      token,
-    } = responseData as AuthSessionsSessionIdVerifyRequestResponse;
+    const { token } =
+      responseData as AuthSessionsSessionIdVerifyRequestResponse;
 
+    // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
     localStorage.setItem('instaLink.authSession.id', sessionId);
     localStorage.setItem('instaLink.authSession.token', token);
   } else {
