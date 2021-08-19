@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
 import { useAuth } from '../../auth/hooks/useAuth';
+import { useAuthGuard } from '../../auth/hooks/useAuthGuard';
 import { Header } from '../../components/Header';
 import { LoginForm } from '../../components/LoginForm';
 
@@ -20,7 +21,8 @@ function Login() {
   const [error, setError] = useState<null | string>(null);
   const [step, setStep] = useState<Step>(Step.initial);
 
-  const { isLoggedIn, sendLoginLink, verifyLoginLink } = useAuth();
+  const { sendLoginLink, verifyLoginLink } = useAuth();
+  const { authGuard } = useAuthGuard('/dashboard');
 
   const handleLogin = async (email: string) => {
     setError(null);
@@ -54,15 +56,7 @@ function Login() {
     handleQueryParams(window.location.search);
   }, [window.location.search]);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      window.location.replace('/dashboard');
-    }
-  }, [isLoggedIn]);
-
-  if (isLoggedIn) return null;
-
-  return (
+  return authGuard(
     <div className={styles.container}>
       <Head>
         <title>InstaLink &bull; Iniciar sesión</title>
