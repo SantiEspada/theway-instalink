@@ -1,9 +1,10 @@
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { useEffect } from 'react';
-import { DeleteAuthSessionInteractor } from '../../auth/interactors/DeleteAuthSessionInteractor';
 
 import { stringifyError } from '../../common/utils/stringifyError';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { DeleteAuthSessionInteractor } from '../../auth/interactors/DeleteAuthSessionInteractor';
 
 import Spinner from '../../components/Spinner';
 
@@ -18,23 +19,17 @@ interface LogoutParams extends ParsedUrlQuery {
   token?: string;
 }
 
-function clearLocalStorage(): void {
-  // TODO: extract these to a hook/service/smthing so properties do not have to be duplicated for cleaning
-  localStorage.removeItem('instaLink.authSession.email');
-  localStorage.removeItem('instaLink.authSession.nonce');
-  localStorage.removeItem('instaLink.authSession.id');
-  localStorage.removeItem('instaLink.authSession.token');
-}
-
 export default function Logout(props: LogoutProps) {
   const { redirectUrl, error } = props;
+
+  const { clearState } = useAuth();
 
   useEffect(() => {
     if (error) {
       console.error(error);
     }
 
-    clearLocalStorage();
+    clearState();
     window.location.href = redirectUrl;
   }, []);
 
@@ -51,9 +46,7 @@ const deleteAuthSessionInteractor = new DeleteAuthSessionInteractor();
 
 export const getServerSideProps: GetServerSideProps<LogoutProps, LogoutParams> =
   async (context) => {
-    const {
-      params: { token },
-    } = context;
+    const token = context.params?.token;
 
     const logoutProps: LogoutProps = {
       redirectUrl: '/auth/login',
