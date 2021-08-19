@@ -1,12 +1,11 @@
-import dynamic from 'next/dynamic';
-
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useAuthGuard } from '../../auth/hooks/useAuthGuard';
 import { copyToClipboard } from '../../common/utils/copyToClipboard';
+import { withoutSsr } from '../../common/utils/withoutSsr';
 
-export function DashboardIndex() {
+export function BackstageIndex() {
   const { token, user } = useAuth();
-  const { authGuard } = useAuthGuard('/dashboard');
+  const { authGuard } = useAuthGuard();
 
   async function handleCopyToken() {
     try {
@@ -22,7 +21,7 @@ export function DashboardIndex() {
 
   return authGuard(
     <div>
-      <h1>Dashboard</h1>
+      <h1>Backstage</h1>
       <pre>
         <label>
           Auth token:
@@ -40,6 +39,4 @@ export function DashboardIndex() {
   );
 }
 
-export default dynamic(() => Promise.resolve(DashboardIndex), {
-  ssr: false,
-});
+export default withoutSsr(BackstageIndex);

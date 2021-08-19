@@ -10,6 +10,7 @@ import { Header } from '../../components/Header';
 import { LoginForm } from '../../components/LoginForm';
 
 import styles from './login.module.scss';
+import { withoutSsr } from '../../common/utils/withoutSsr';
 
 enum Step {
   initial,
@@ -22,7 +23,7 @@ function Login() {
   const [step, setStep] = useState<Step>(Step.initial);
 
   const { sendLoginLink, verifyLoginLink } = useAuth();
-  const { authGuard } = useAuthGuard('/dashboard');
+  const { authGuard } = useAuthGuard('/backstage');
 
   const handleLogin = async (email: string) => {
     setError(null);
@@ -91,6 +92,4 @@ function Login() {
   );
 }
 
-export default dynamic(() => Promise.resolve(Login), {
-  ssr: false,
-});
+export default withoutSsr(Login);
