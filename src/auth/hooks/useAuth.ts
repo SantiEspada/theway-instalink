@@ -28,6 +28,7 @@ export interface UseAuth {
   user: UseAuthUser | null;
   sendLoginLink(email: string): Promise<void>;
   verifyLoginLink(candidateSessionId: string): Promise<void>;
+  clearState(): void;
 }
 
 export function useAuth(): UseAuth {
@@ -77,10 +78,8 @@ export function useAuth(): UseAuth {
     const responseData = await response.json();
 
     if (response.status === StatusCodes.OK) {
-      const {
-        email: newEmail,
-        nonce: newNonce,
-      } = responseData as AuthSessionsRequestResponse;
+      const { email: newEmail, nonce: newNonce } =
+        responseData as AuthSessionsRequestResponse;
 
       setEmail(newEmail);
       setNonce(newNonce);
@@ -111,9 +110,8 @@ export function useAuth(): UseAuth {
     const responseData = await response.json();
 
     if (response.status === StatusCodes.OK) {
-      const {
-        token,
-      } = responseData as AuthSessionsSessionIdVerifyRequestResponse;
+      const { token } =
+        responseData as AuthSessionsSessionIdVerifyRequestResponse;
 
       setSessionId(candidateSessionId);
       setToken(token);
@@ -122,11 +120,21 @@ export function useAuth(): UseAuth {
     }
   }
 
+  function clearState() {
+    setEmail(null);
+    setNonce(null);
+    setSessionId(null);
+    setToken(null);
+    setIsLoggedIn(null);
+    setUser(null);
+  }
+
   return {
     isLoggedIn,
     token,
     user,
     sendLoginLink,
     verifyLoginLink,
+    clearState,
   };
 }

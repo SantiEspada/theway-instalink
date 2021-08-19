@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
+import { useAuth } from '../../auth/hooks/useAuth';
 import { Header } from '../../components/Header';
 import { LoginForm } from '../../components/LoginForm';
 
 import styles from './login.module.scss';
-import { useAuth } from '../../auth/hooks/useAuth';
 
 enum Step {
   initial,

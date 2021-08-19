@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { MongoDBDatasource } from '../../common/datasources/MongoDBDatasource';
 import { AuthSession } from '../models/AuthSession';
 import { AuthSessionCreationDTO } from '../models/AuthSessionCreationDTO';
+import { AuthSessionDeletionDTO } from '../models/AuthSessionDeletionDTO';
 import { AuthSessionFindDTO } from '../models/AuthSessionFindDTO';
 import { AuthSessionRepository } from './AuthSessionRepository';
 
@@ -51,8 +52,10 @@ export class MongoDBAuthSessionRepository implements AuthSessionRepository {
     return authSession;
   }
 
-  public async delete(session: AuthSessionFindDTO): Promise<void> {
-    throw new Error('Method not implemented.');
+  public async delete(deletionDTO: AuthSessionDeletionDTO): Promise<void> {
+    const collection = await this.getCollection();
+
+    await collection.deleteOne({ id: deletionDTO.id });
   }
 
   private adaptDocumentToAuthSession(document: any): AuthSession {
