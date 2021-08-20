@@ -21,7 +21,7 @@ function Login() {
 
   const { sendLoginLink, verifyLoginLink } = useAuth();
   const { authGuard } = useAuthGuard({
-    redirectUrl: '',
+    redirectUrl: '/backstage',
     isLogin: true,
   });
 

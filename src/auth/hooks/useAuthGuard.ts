@@ -16,7 +16,7 @@ export function useAuthGuard(args: useAuthGuardArgs = {}) {
   function authGuard(element: JSX.Element) {
     const { isLoggedIn } = useAuth();
 
-    const shouldRedirect = !isLoggedIn || (isLogin && isLoggedIn);
+    const shouldRedirect = (isLogin && isLoggedIn) || (!isLogin && !isLoggedIn);
 
     useEffect(() => {
       if (shouldRedirect) {
