@@ -20,7 +20,10 @@ function Login() {
   const [step, setStep] = useState<Step>(Step.initial);
 
   const { sendLoginLink, verifyLoginLink } = useAuth();
-  const { authGuard } = useAuthGuard('', false);
+  const { authGuard } = useAuthGuard({
+    redirectUrl: '',
+    isLogin: true,
+  });
 
   const handleLogin = async (email: string) => {
     setError(null);
