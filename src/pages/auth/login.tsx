@@ -1,7 +1,4 @@
-import { StatusCodes } from 'http-status-codes';
-
 import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -23,7 +20,7 @@ function Login() {
   const [step, setStep] = useState<Step>(Step.initial);
 
   const { sendLoginLink, verifyLoginLink } = useAuth();
-  const { authGuard } = useAuthGuard('/backstage');
+  const { authGuard } = useAuthGuard('', false);
 
   const handleLogin = async (email: string) => {
     setError(null);

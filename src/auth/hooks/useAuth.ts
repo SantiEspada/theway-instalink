@@ -1,7 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import createPersistedState from 'use-persisted-state';
+
 import {
   AuthSessionsRequestBody,
   AuthSessionsRequestResponse,
