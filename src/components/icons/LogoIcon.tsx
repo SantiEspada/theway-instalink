@@ -1,6 +1,11 @@
-export function LogoIcon() {
+export function LogoIcon(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 49 49">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 49 49"
+      {...props}
+    >
       <path
         fill="#D253FF"
         d="M34.465 19.95L21.773 7.258a3.421 3.421 0 014.839-4.839l17.53 17.53a6 6 0 010 8.486l-17.53 17.53a3.421 3.421 0 01-4.839-4.838l12.692-12.692a6 6 0 000-8.485z"
