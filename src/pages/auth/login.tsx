@@ -1,14 +1,13 @@
-import { StatusCodes } from 'http-status-codes';
-
 import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
 import { useAuth } from '../../auth/hooks/useAuth';
+import { useAuthGuard } from '../../auth/hooks/useAuthGuard';
 import { Header } from '../../components/Header';
 import { LoginForm } from '../../components/LoginForm';
 
 import styles from './login.module.scss';
+import { withoutSsr } from '../../common/utils/withoutSsr';
 
 enum Step {
   initial,
@@ -20,7 +19,11 @@ function Login() {
   const [error, setError] = useState<null | string>(null);
   const [step, setStep] = useState<Step>(Step.initial);
 
-  const { isLoggedIn, sendLoginLink, verifyLoginLink } = useAuth();
+  const { sendLoginLink, verifyLoginLink } = useAuth();
+  const { authGuard } = useAuthGuard({
+    redirectUrl: '/backstage',
+    isLogin: true,
+  });
 
   const handleLogin = async (email: string) => {
     setError(null);
@@ -54,15 +57,7 @@ function Login() {
     handleQueryParams(window.location.search);
   }, [window.location.search]);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      window.location.replace('/dashboard');
-    }
-  }, [isLoggedIn]);
-
-  if (isLoggedIn) return null;
-
-  return (
+  return authGuard(
     <div className={styles.container}>
       <Head>
         <title>InstaLink &bull; Iniciar sesión</title>
@@ -97,6 +92,4 @@ function Login() {
   );
 }
 
-export default dynamic(() => Promise.resolve(Login), {
-  ssr: false,
-});
+export default withoutSsr(Login);

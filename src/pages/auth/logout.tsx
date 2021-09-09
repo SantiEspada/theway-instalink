@@ -2,8 +2,8 @@ import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import { useEffect } from 'react';
 
-import { stringifyError } from '../../common/utils/stringifyError';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { stringifyError } from '../../common/utils/stringifyError';
 import { DeleteAuthSessionInteractor } from '../../auth/interactors/DeleteAuthSessionInteractor';
 
 import Spinner from '../../components/Spinner';
