@@ -29,3 +29,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# docker containers data
+/docker/*_data

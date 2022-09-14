@@ -6,8 +6,8 @@ import { LogoIcon } from './icons/LogoIcon';
 import styles from './BackstageHeader.module.scss';
 
 interface AppOption {
+  key: string;
   label: string;
-  value: string;
 }
 
 export interface BackstageHeaderProps {
@@ -71,8 +71,8 @@ export default function BackstageHeader(props: BackstageHeaderProps) {
           onChange={handleCurrentAppChange}
           className={styles.header__appSelector__select}
         >
-          {availableApps.map(({ label, value }) => (
-            <option key={value} value={value} selected={value === currentApp}>
+          {availableApps.map(({ label, key }) => (
+            <option key={key} value={key} selected={key === currentApp}>
               {label}
             </option>
           ))}

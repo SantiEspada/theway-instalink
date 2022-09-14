@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useAuthGuard } from '../../auth/hooks/useAuthGuard';
 import { withoutSsr } from '../../common/utils/withoutSsr';
 import BackstageHeader from '../../components/BackstageHeader';
+import { DashboardApp } from './apps/dashboard';
 
 import styles from './index.module.scss';
 
@@ -11,17 +13,20 @@ export function BackstageIndex() {
 
   const availableApps = [
     {
+      key: 'dashboard',
       label: 'Dashboard',
-      value: '',
-    },
-    {
-      label: 'Resume',
-      value: 'resume',
+      Component: DashboardApp,
     },
   ];
 
-  const onCurrentAppChange = (newCurrentApp: string) => {
-    console.log(newCurrentApp);
+  const [currentApp, setCurrentApp] = useState(availableApps[0]);
+
+  const onCurrentAppChange = (newCurrentAppKey: string) => {
+    const newCurrentApp = availableApps.find(
+      ({ key }) => key === newCurrentAppKey
+    );
+
+    setCurrentApp(newCurrentApp);
   };
 
   return authGuard(
@@ -30,10 +35,13 @@ export function BackstageIndex() {
         appName="Backstage"
         availableApps={availableApps}
         authToken={token}
-        currentApp=""
+        currentApp={currentApp.key}
         onCurrentAppChange={onCurrentAppChange}
         userEmail={user ? user.id : null}
       />
+      <div className={styles.appWrapper}>
+        <currentApp.Component />
+      </div>
     </div>
   );
 }

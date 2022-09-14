@@ -8,16 +8,16 @@ function backstageHeaderFixture() {
     authToken: 'auth-token',
     availableApps: [
       {
+        key: 'dashboard',
         label: 'Dashboard',
-        value: '',
       },
       {
+        key: 'sheets',
         label: 'Sheets',
-        value: 'sheets',
       },
       {
+        key: 'messages',
         label: 'Messages',
-        value: 'messages',
       },
     ],
     currentApp: '',

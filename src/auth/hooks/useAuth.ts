@@ -14,6 +14,7 @@ import {
 
 interface UseAuthUser {
   id: string;
+  isAdmin: boolean;
 }
 
 const useEmailState = createPersistedState('instalink.auth.email');
@@ -47,8 +48,12 @@ export function useAuth(): UseAuth {
       try {
         const decodedToken = jwtDecode<JwtPayload>(token);
 
+        const id = decodedToken.sub as string;
+        const isAdmin = id.includes('@santiespada.dev'); // FIXME: really hardcoded lol
+
         const newUser: UseAuthUser = {
           id: decodedToken.sub as string,
+          isAdmin
         };
 
         setUser(newUser);
