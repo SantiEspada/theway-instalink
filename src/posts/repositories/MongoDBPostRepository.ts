@@ -63,7 +63,30 @@ export class MongoDBPostRepository implements PostRepository {
   public async findOne(findDTO: PostFindDTO): Promise<Post> {
     const collection = await this.getCollection();
 
-    const document = await collection.findOne({ id: findDTO.id });
+    const document = await collection.findOne({ id: findDTO.id }); // FIXME: we're only managing id here
+
+    if (!document) {
+      throw new ApiError('Post not found', StatusCodes.NOT_FOUND);
+    }
+
+    const post = this.adaptDocumentToPost(document);
+
+    return post;
+  }
+
+  public async findAndUpdateOne(
+    findDTO: PostFindDTO,
+    updateDTO: PostCreationDTO
+  ): Promise<Post> {
+    const collection = await this.getCollection();
+
+    const document = await collection.findOneAndUpdate(
+      { id: findDTO.id },
+      updateDTO,
+      {
+        returnOriginal: false,
+      }
+    ); // FIXME: we're only managing id here for the find
 
     if (!document) {
       throw new ApiError('Post not found', StatusCodes.NOT_FOUND);

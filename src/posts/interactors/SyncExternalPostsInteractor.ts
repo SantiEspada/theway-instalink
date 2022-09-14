@@ -21,7 +21,8 @@ export class SyncExternalPostsInteractor
     Interactor<
       SyncExternalPostsInteractorInput,
       SyncExternalPostsInteractorOutput
-    > {
+    >
+{
   constructor(
     private readonly postRepository: PostRepository = new MongoDBPostRepository(),
     private readonly blogPostService: ExternalPostService = new GhostExternalPostService(),
@@ -39,9 +40,9 @@ export class SyncExternalPostsInteractor
       for (const externalPost of externalPosts) {
         const { url, title, pictureUrl, publishedAt } = externalPost;
 
-        const postExists = await this.doesPostExist(url);
+        const [postExists, existingPostId] = await this.doesPostExist(url);
 
-        if (!postExists) {
+        if (postExists) {
           await this.postRepository.create({
             source,
             url,
@@ -49,6 +50,17 @@ export class SyncExternalPostsInteractor
             title,
             publishedAt,
           });
+        } else {
+          await this.postRepository.findAndUpdateOne(
+            { id: existingPostId },
+            {
+              source,
+              url,
+              pictureUrl,
+              title,
+              publishedAt,
+            }
+          );
         }
       }
     }
@@ -89,11 +101,17 @@ export class SyncExternalPostsInteractor
     }
   }
 
-  private async doesPostExist(url: string): Promise<boolean> {
+  private async doesPostExist(
+    url: string
+  ): Promise<[doesPostExist: boolean, existingPostId?: string]> {
     const postList = await this.postRepository.find({ url, limit: 1 });
 
     const doesPostExist = postList.items.length > 0;
 
-    return doesPostExist;
+    if (doesPostExist) {
+      return [true, postList.items[0].id];
+    } else {
+      return [false];
+    }
   }
 }
