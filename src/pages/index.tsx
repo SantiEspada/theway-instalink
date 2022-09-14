@@ -8,6 +8,7 @@ import { FindLinksInteractor } from '../links/interactors/FindLinksInteractor';
 import { Link } from '../links/models/Link';
 
 import styles from './Home.module.scss';
+import Head from 'next/head';
 
 const findLinksInteractor = new FindLinksInteractor();
 
@@ -61,6 +62,9 @@ export default function Home(props: HomeProps): JSX.Element {
 
   return (
     <div className={styles.home}>
+      <Head>
+        <title>Elige una publicación - The Way</title>
+      </Head>
       <main className={styles.home__main}>
         <div className={styles.home__logo}>
           <LogoFull />

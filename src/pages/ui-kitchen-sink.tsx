@@ -1,3 +1,7 @@
+import {
+  LoadingState,
+  LoadingStateProps,
+} from '../common/components/LoadingState';
 import BackstageHeader, {
   BackstageHeaderProps,
 } from '../components/BackstageHeader';
@@ -29,7 +33,23 @@ function backstageHeaderFixture() {
 
   return <BackstageHeader {...props} />;
 }
+function loadingStateFixture() {
+  const props: LoadingStateProps = {
+    label: 'Sincronizando publicaciones de Instagram',
+  };
+
+  return <LoadingState {...props} />;
+}
 
 export default function UIKitchenSink() {
-  return <div>{backstageHeaderFixture()}</div>;
+  return (
+    <>
+      <h1>UI Kitchen Sink</h1>
+      <h2>BackstageHeader</h2>
+      <div>{backstageHeaderFixture()}</div>
+      <hr />
+      <h2>LoadingState</h2>
+      <div>{loadingStateFixture()}</div>
+    </>
+  );
 }

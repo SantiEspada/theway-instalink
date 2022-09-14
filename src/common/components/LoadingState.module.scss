@@ -1,0 +1,50 @@
+.container {
+  --spinner-size: 48px;
+  --padding: 22px;
+  width: 100%;
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--spinner-size);
+}
+
+.spinner {
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  margin-right: var(--padding);
+  display: inline-block;
+  position: relative;
+}
+.spinner::after,
+.spinner::before {
+  content: '';  
+  box-sizing: border-box;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  border-radius: 50%;
+  border: 2px solid #D253FF;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: animloader 2s linear infinite;
+}
+.spinner::after {
+  animation-delay: 1s;
+}
+
+@keyframes animloader {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.label {
+  font-size: .4em;
+  width: 100%;
+}

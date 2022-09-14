@@ -1,7 +1,9 @@
+import Head from 'next/head';
 import { useState } from 'react';
 
 import { useAuth } from '../auth/hooks/useAuth';
 import BackstageHeader from '../components/BackstageHeader';
+import { CreateLinkApp } from './apps/create-link/CreateLinkApp';
 import { DashboardApp } from './apps/dashboard';
 
 import styles from './index.module.scss';
@@ -11,10 +13,15 @@ export function BackstageApp() {
 
   const availableApps = [
     {
-      key: 'dashboard',
-      label: 'Dashboard',
-      Component: DashboardApp,
+      key: 'create-link',
+      label: 'Crear enlace',
+      Component: CreateLinkApp,
     },
+    // {
+    //   key: 'dashboard',
+    //   label: 'Dashboard',
+    //   Component: DashboardApp,
+    // },
   ];
 
   const [currentApp, setCurrentApp] = useState(availableApps[0]);
@@ -29,6 +36,9 @@ export function BackstageApp() {
 
   return (
     <div className={styles.container}>
+      <Head>
+        <title>Backstage - The Way</title>
+      </Head>
       <BackstageHeader
         appName="Backstage"
         availableApps={availableApps}
