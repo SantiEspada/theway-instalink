@@ -1,8 +1,13 @@
 import React from 'react';
 
-export function CheckedCircle() {
+export function CheckedCircle(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 48 48"
+      {...props}
+    >
       <circle cx="24" cy="24" r="24" fill="#500D68"></circle>
       <path
         fill="#fff"

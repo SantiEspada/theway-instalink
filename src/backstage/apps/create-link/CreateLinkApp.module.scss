@@ -1,0 +1,94 @@
+@import '../../../common/mixins/button.scss';
+
+.title_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title_row__button {
+  font-size: 1rem;
+  display: inline-grid;
+  padding: .4rem .8rem;
+  border-radius: 3rem;
+  background: none;
+  border: none;
+  place-items: center;
+  margin-right: -.8rem;
+  transform: translateY(.4rem);
+  cursor: pointer;
+}
+
+.title_row__button:focus {
+  outline-color: rgba(0,0,0,.2);
+}
+
+.title_row__button:hover {
+  text-decoration: underline;
+}
+
+.action_row {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.refresh_button {
+  display: inline;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.action_row__button {
+  @include button();
+  font-size: 1.2rem;
+  height: 2.6rem;
+  background-color: white;
+  text-decoration: none;
+}
+
+.action_row__button+.action_row__button {
+  margin-left: 1rem;
+}
+
+.action_row__button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.action_row__button:disabled:hover {
+  box-shadow: none;
+}
+
+
+.link_created {
+  --size: 48px;
+  --padding: 22px;
+  width: 100%;
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--size);
+}
+
+.link_created__icon {
+  width: var(--size);
+  height: var(--size);
+  margin-right: var(--padding);
+  display: inline-block;
+  position: relative;
+}
+
+.link_created__label {
+  font-size: .4em;
+  width: 100%;
+}
+
+.loading_container {
+  --padding: 22px;
+  width: calc(100% + var(--padding)*2);
+  margin-left: calc(var(--padding) * -1);
+}
