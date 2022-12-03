@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { ComboInput } from './ComboInput';
 import { ArrowRight } from './icons/ArrowRight';
@@ -7,7 +7,7 @@ import styles from './LoginForm.module.scss';
 
 export interface LoginFormProps {
   error?: string;
-  onSubmit({ email: string }): void;
+  onSubmit(evt: { email: string }): void;
 }
 
 export function LoginForm({ error, onSubmit }: LoginFormProps) {
