@@ -4,6 +4,8 @@ import { ExternalPostService } from './ExternalPostService';
 import { ExternalPost } from '../models/ExternalPost';
 import { StatusCodes } from 'http-status-codes';
 import { ApiError } from '../../common/models/ApiError';
+import { GetAppConfigInteractor } from '../../app-config/interactors/GetAppConfigInteractor';
+import { InstagramCredential } from '../../app-config/models/AppConfig';
 
 interface InstagramPost {
   permalink: string;
@@ -25,15 +27,17 @@ interface InstagramResponseError {
 
 export class InstagramExternalPostService implements ExternalPostService {
   private readonly instagramApiUrl: string;
-  private readonly instagramApiAccessToken: string;
 
-  constructor(env = process.env) {
+  constructor(
+    env = process.env,
+    private readonly getAppConfigInteractor: GetAppConfigInteractor = new GetAppConfigInteractor()
+  ) {
     this.instagramApiUrl = env.INSTAGRAM_API_URL;
-    this.instagramApiAccessToken = env.INSTAGRAM_API_ACCESS_TOKEN;
   }
 
   public async getPosts(from?: Date): Promise<ExternalPost[]> {
-    const instagramMediaRequest = await fetch(this.instagramMediaRequestUrl);
+    const instagramMediaRequestUrl = await this.getInstagramMediaRequestUrl();
+    const instagramMediaRequest = await fetch(instagramMediaRequestUrl);
 
     const instagramMediaResponse:
       | InstagramMediaResponse
@@ -53,9 +57,11 @@ export class InstagramExternalPostService implements ExternalPostService {
     return posts;
   }
 
-  private get instagramMediaRequestUrl(): string {
+  private async getInstagramMediaRequestUrl(): Promise<string> {
+    const { accessToken } = await this.getInstagramCredential();
+
     const queryParams = new URLSearchParams({
-      access_token: this.instagramApiAccessToken,
+      access_token: accessToken,
       fields: 'permalink,caption,media_url,timestamp',
     });
 
@@ -75,5 +81,12 @@ export class InstagramExternalPostService implements ExternalPostService {
     };
 
     return externalPost;
+  }
+
+  private async getInstagramCredential(): Promise<InstagramCredential> {
+    const { instagramCredential } =
+      await this.getAppConfigInteractor.interact();
+
+    return instagramCredential;
   }
 }

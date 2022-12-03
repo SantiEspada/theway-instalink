@@ -88,8 +88,8 @@ export abstract class RequestHandler {
       error = originalError;
     } else {
       error = new ApiError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        originalError.message
+        originalError.message,
+        StatusCodes.INTERNAL_SERVER_ERROR
       );
     }
 
@@ -106,17 +106,25 @@ export abstract class RequestHandler {
   private async isRequestAuthorized(
     request: ApiRequest
   ): Promise<true | never> {
-    if (request.headers && 'authorization' in request.headers) {
-      const token = request.headers.authorization.split('Bearer ')[1];
+    let token: string;
 
-      if (this.authTokenservice.verifyToken({ token })) {
-        return true;
-      }
+    if (request.headers && 'authorization' in request.headers) {
+      token = request.headers.authorization.split('Bearer ')[1];
+    } else if (
+      // FIXME: dat casting bro
+      (request as GetApiRequest).query &&
+      'access_token' in (request as GetApiRequest).query
+    ) {
+      token = (request as GetApiRequest).query.access_token as string;
     } else {
       throw new ApiError(
         'Authorization not present in request',
         StatusCodes.UNAUTHORIZED
       );
     }
+
+    this.authTokenservice.verifyToken({ token });
+
+    return true;
   }
 }

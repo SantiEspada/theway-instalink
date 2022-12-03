@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import { useAuth } from '../auth/hooks/useAuth';
 import BackstageHeader from '../components/BackstageHeader';
+import { ConfigApp } from './apps/config/ConfigApp';
 import { CreateLinkApp } from './apps/create-link/CreateLinkApp';
 import { DashboardApp } from './apps/dashboard';
 
@@ -16,6 +17,11 @@ export function BackstageApp() {
       key: 'create-link',
       label: 'Crear enlace',
       Component: CreateLinkApp,
+    },
+    {
+      key: 'config',
+      label: 'Configuración',
+      Component: ConfigApp,
     },
     // {
     //   key: 'dashboard',

@@ -90,6 +90,8 @@ export class AwsS3FileService implements FileService {
   ): Promise<string> {
     const fileType = await FileType.fromBuffer(sourceFileBuffer);
 
+    console.log('eh');
+
     if (!fileType) {
       throw new Error('Invalid/unknown file type');
     }

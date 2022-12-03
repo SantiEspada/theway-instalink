@@ -43,14 +43,6 @@ export class SyncExternalPostsInteractor
         const [postExists, existingPostId] = await this.doesPostExist(url);
 
         if (postExists) {
-          await this.postRepository.create({
-            source,
-            url,
-            pictureUrl,
-            title,
-            publishedAt,
-          });
-        } else {
           await this.postRepository.findAndUpdateOne(
             { id: existingPostId },
             {
@@ -61,6 +53,14 @@ export class SyncExternalPostsInteractor
               publishedAt,
             }
           );
+        } else {
+          await this.postRepository.create({
+            source,
+            url,
+            pictureUrl,
+            title,
+            publishedAt,
+          });
         }
       }
     }

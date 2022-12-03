@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import { LoadingState } from '../../../common/components/LoadingState';
 import { useApiClient } from '../../../common/hooks/useApiClient';
 import { List } from '../../../common/models/List';
@@ -6,8 +7,6 @@ import { Post, PostSource } from '../../../posts/models/Post';
 import { PostSelector } from './components/PostSelector';
 
 export function CreateLinkApp() {
-  // const formRef = useRef();
-
   const apiClient = useApiClient();
 
   enum Step {
@@ -79,12 +78,6 @@ export function CreateLinkApp() {
     }
   }, [apiClient]);
 
-  // const [token, setToken] = useState<string | null>(null);
-
-  // function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
-  //   event?.preventDefault();
-  // }
-
   return (
     <>
       <h2>Crear enlace</h2>
@@ -117,17 +110,6 @@ export function CreateLinkApp() {
         [Step.creatingLink]: () => <LoadingState label="Creando enlace" />,
         [Step.linkCreated]: () => <div>Enlace creado</div>,
       }[step]()}
-
-      {/* <form onSubmit={handleFormSubmit} ref={formRef}>
-        <label htmlFor="length">Duración:</label>
-        <select name="length" id="length">
-          <option value="86400">1 dia</option>
-          <option value="604800">1 semana</option>
-          <option value="31536000">1 año</option>
-          <option value="315360000">10 años</option>
-        </select>
-        <button type="submit">Generar token</button>
-      </form> */}
     </>
   );
 }

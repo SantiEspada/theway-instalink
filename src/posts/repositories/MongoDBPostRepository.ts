@@ -82,7 +82,9 @@ export class MongoDBPostRepository implements PostRepository {
 
     const document = await collection.findOneAndUpdate(
       { id: findDTO.id },
-      updateDTO,
+      {
+        $set: updateDTO,
+      },
       {
         returnOriginal: false,
       }
