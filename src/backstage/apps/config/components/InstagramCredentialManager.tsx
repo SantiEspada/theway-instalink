@@ -21,7 +21,7 @@ export function InstagramCredentialInfo(props: {
     return <div>No hay configurada ninguna clave de acceso aún.</div>;
   }
 
-  const isCredentialExpired = new Date(credential.expiresAt) > new Date();
+  const isCredentialExpired = credential.expiresAt <= new Date();
 
   const isAboutToExpireDate = new Date(
     credential.expiresAt.getTime() - EXPIRATION_WARNING_PERIOD_MS
@@ -31,7 +31,7 @@ export function InstagramCredentialInfo(props: {
   return (
     <div>
       <strong>
-        {isCredentialExpired
+        {!isCredentialExpired
           ? isAboutToExpire
             ? '🟡 Credencial válida (expira pronto)'
             : '🟢 Credencial válida'
@@ -60,15 +60,17 @@ function getInstagramAuthUrl() {
 
 export function InstagramCredentialActions(props: {
   credential: InstagramCredential;
+  onRefreshCredential: () => void;
 }) {
-  const { credential } = props;
+  const { credential, onRefreshCredential } = props;
+
+  const isCredentialExpired = credential && credential.expiresAt <= new Date();
 
   const instagramAuthUrl = getInstagramAuthUrl();
 
   function RefreshCredential() {
-    // FIXME: this should actually refresh the existing token instead of replacing it
     return (
-      <a className={styles.button} href={instagramAuthUrl.href}>
+      <a className={styles.button} onClick={onRefreshCredential}>
         Refrescar clave
       </a>
     );
@@ -82,9 +84,17 @@ export function InstagramCredentialActions(props: {
     );
   }
 
+  console.log(!!credential);
+  console.log(isCredentialExpired);
+  console.log(credential && !isCredentialExpired);
+
   return (
     <div className={styles.action_container}>
-      {credential ? <RefreshCredential /> : <CreateCredential />}
+      {credential && !isCredentialExpired ? (
+        <RefreshCredential />
+      ) : (
+        <CreateCredential />
+      )}
     </div>
   );
 }
@@ -108,6 +118,12 @@ export function InstagramCredentialManager() {
     setCredential(instagramCredential);
   }
 
+  async function refreshCredential() {
+    await apiClient.post<AppConfig>('oauth/instagram');
+
+    await getCredential();
+  }
+
   useEffect(() => {
     apiClient && getCredential();
   }, [apiClient]);
@@ -115,7 +131,10 @@ export function InstagramCredentialManager() {
   return (
     <div className={styles.container}>
       <InstagramCredentialInfo credential={credential} />
-      <InstagramCredentialActions credential={credential} />
+      <InstagramCredentialActions
+        credential={credential}
+        onRefreshCredential={refreshCredential}
+      />
     </div>
   );
 }

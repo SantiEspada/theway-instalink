@@ -1,7 +1,6 @@
 import { Credentials, S3 } from 'aws-sdk';
 import http from 'http';
 import https from 'https';
-import stream from 'stream';
 import FileType from 'file-type';
 
 import { FileUploadDTO } from '../models/FileUploadDTO';
@@ -27,14 +26,6 @@ export class AwsS3FileService implements FileService {
       secretAccessKey: env.S3_SECRET_ACCESS_KEY,
     });
 
-    console.log({
-      bucket: this.BUCKET,
-      objectPrefix: this.OBJECT_KEY_PREFIX,
-      resultUrlPrefix: this.RESULT_URL_PREFIX,
-      endpoint,
-      credentials,
-    });
-
     this.s3Client = new S3({
       endpoint,
       credentials,
@@ -46,11 +37,7 @@ export class AwsS3FileService implements FileService {
   ): Promise<FileUploadResult> {
     const { sourceUrl, destinationFilepath } = fileUploadDTO;
 
-    console.log(`Downloading file from ${sourceUrl}`);
-
     const fileBuffer = await this.getFileBuffer(sourceUrl);
-
-    console.log('File stream obtained');
 
     const uploadedFileUrl = await this.uploadFileBufferToS3(
       fileBuffer,
@@ -90,13 +77,9 @@ export class AwsS3FileService implements FileService {
   ): Promise<string> {
     const fileType = await FileType.fromBuffer(sourceFileBuffer);
 
-    console.log('eh');
-
     if (!fileType) {
       throw new Error('Invalid/unknown file type');
     }
-
-    console.log(fileType);
 
     const objectKey = `${this.OBJECT_KEY_PREFIX}${destinationFilepath}.${fileType.ext}`;
 
@@ -110,8 +93,6 @@ export class AwsS3FileService implements FileService {
       .promise();
 
     const uploadedFileUrl = `${this.RESULT_URL_PREFIX}${objectKey}`;
-
-    console.log(`File uploaded - available at ${uploadedFileUrl}`);
 
     return uploadedFileUrl;
   }
