@@ -9,7 +9,10 @@
     "prebuild": "yarn check-env",
     "build": "next build",
     "start": "next start",
-    "check-env": "node ./scripts/check-env.js"
+    "check-env": "node ./scripts/check-env.js",
+    "dc:up": "docker-compose up -d",
+    "dc:stop:": "docker-compose stop",
+    "dc:down": "docker-compose down"
   },
   "dependencies": {
     "@tryghost/content-api": "^1.4.11",
