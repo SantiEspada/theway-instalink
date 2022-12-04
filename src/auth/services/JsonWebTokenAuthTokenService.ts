@@ -9,7 +9,7 @@ import { ApiError } from '../../common/models/ApiError';
 
 interface JsonWebTokenAuthTokenServiceConfig {
   secret: string;
-  expirationTimeSecs?: string;
+  expirationTimeSecs?: string | number;
 }
 
 export class JsonWebTokenAuthTokenService implements AuthTokenService {

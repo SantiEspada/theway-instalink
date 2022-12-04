@@ -14,7 +14,10 @@ export class ApiClient {
     };
   }
 
-  public async get<TResponse = unknown>(path: string, queryParams?: Record<string, string>): Promise<TResponse> {
+  public async get<TResponse = unknown>(
+    path: string,
+    queryParams?: Record<string, string>
+  ): Promise<TResponse> {
     const requestUrl = `/api/${path}${
       queryParams ? `?${new URLSearchParams(queryParams)}` : ''
     }`;
@@ -23,6 +26,10 @@ export class ApiClient {
       ...this.requestHeaders,
       method: ApiRequestMethod.GET,
     });
+
+    if (response.status === 403) {
+      window.location.href = '/auth/logout'; // FIXME: we should find a better way to handle expired sessions
+    }
 
     const responseJson = await response.json();
 
