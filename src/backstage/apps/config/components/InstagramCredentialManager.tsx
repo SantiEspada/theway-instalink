@@ -84,10 +84,6 @@ export function InstagramCredentialActions(props: {
     );
   }
 
-  console.log(!!credential);
-  console.log(isCredentialExpired);
-  console.log(credential && !isCredentialExpired);
-
   return (
     <div className={styles.action_container}>
       {credential && !isCredentialExpired ? (

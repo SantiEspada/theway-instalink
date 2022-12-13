@@ -52,7 +52,7 @@ export class MongoDBPostRepository implements PostRepository {
     const postDocuments = await collection
       .find(filterQuery)
       .limit(limit)
-      .sort('createdAt', SortDirection.desc)
+      .sort('publishedAt', SortDirection.desc)
       .toArray();
 
     const postList = this.adaptDocumentsToPostList(postDocuments);

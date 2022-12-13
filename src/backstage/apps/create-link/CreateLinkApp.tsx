@@ -55,12 +55,12 @@ export function CreateLinkApp() {
       apiClient.get<List<Post>>('posts', { source: PostSource.blog }),
     ]);
 
-    function sortAndLimitPosts(unsortedPosts: Post[]) {
-      return unsortedPosts.reverse().slice(0, 8);
+    function limitPostsResponse({ items }: { items: Post[] }): Post[] {
+      return items.slice(0, 8);
     }
 
-    setSourcePosts(sortAndLimitPosts(sourcePostsResponse.items));
-    setDestinationPosts(sortAndLimitPosts(destinationPostsResponse.items));
+    setSourcePosts(limitPostsResponse(sourcePostsResponse));
+    setDestinationPosts(limitPostsResponse(destinationPostsResponse));
 
     setStep(Step.waitingForPostSelection);
   }
