@@ -3,9 +3,9 @@ import { Post } from '../../../../posts/models/Post';
 
 import styles from './PostSelector.module.scss';
 
-function PostSelectorItem({ pictureUrl, isSelected, onClick }) {
+function PostSelectorItem({ title, pictureUrl, isSelected, onClick }) {
   return (
-    <ul className={styles.item} onClick={onClick}>
+    <ul className={styles.item} onClick={onClick} title={title}>
       <img className={styles.item__picture} src={pictureUrl} />
       {isSelected && (
         <div className={styles.item__selectedOverlay}>
@@ -30,6 +30,7 @@ export function PostSelector(props: PostSelectorProps) {
       {posts.map((post) => (
         <PostSelectorItem
           key={post.id}
+          title={post.title}
           pictureUrl={post.pictureUrl}
           isSelected={selectedPost && selectedPost.id === post.id}
           onClick={() => onPostSelected(post)}
